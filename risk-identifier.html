@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strategic Risk Identifier — RiskTrack Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #09131f;
+  --navy-m: #0d1c2e;
+  --navy-l: #152638;
+  --navy-ll:#1d3249;
+  --amber:  #f59e0b;
+  --amber-d:#d97706;
+  --amber-g:#fbbf24;
+  --red:    #ef4444;
+  --orange: #f97316;
+  --green:  #22c55e;
+  --teal:   #14b8a6;
+  --slate:  #7fa2c8;
+  --slate-d:#3f5a78;
+  --white:  #eaf0fb;
+  --card:   #0c1929;
+  --bdr:    rgba(127,162,200,0.11);
+  --bdr-a:  rgba(245,158,11,0.35);
+  --FD: 'Syne', sans-serif;
+  --FB: 'DM Sans', sans-serif;
+  --FM: 'DM Mono', monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--navy);color:var(--white);font-family:var(--FB);font-size:14px;line-height:1.6;min-height:100vh;}
+
+/* ── HEADER ── */
+.hdr{background:var(--navy-m);border-bottom:1px solid var(--bdr);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+.logo{font-family:var(--FD);font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--amber);text-transform:uppercase;display:flex;align-items:center;gap:10px;}
+.logo::before{content:'';width:12px;height:12px;background:transparent;border:2px solid var(--amber);border-radius:2px;transform:rotate(45deg);box-shadow:0 0 8px rgba(245,158,11,.4);}
+.hpills{display:flex;gap:8px;align-items:center;}
+.hpill{background:var(--navy-l);border:1px solid var(--bdr);border-radius:20px;padding:4px 14px;font-family:var(--FM);font-size:11px;color:var(--slate);display:flex;align-items:center;gap:6px;}
+.hpill b{color:var(--amber);}
+
+/* ── PROGRESS ── */
+.pbar-wrap{background:var(--navy-m);height:3px;position:sticky;top:60px;z-index:99;}
+.pbar-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--orange));transition:width .5s cubic-bezier(.4,0,.2,1);width:0%;}
+
+/* ── INTRO ── */
+.intro{background:linear-gradient(140deg,#0d1c2e 0%,#0a1520 55%,#0d1c2e 100%);border-bottom:1px solid var(--bdr);padding:44px 40px 36px;position:relative;overflow:hidden;}
+.intro::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(245,158,11,.05) 0%,transparent 65%);pointer-events:none;}
+.intro::after{content:'';position:absolute;bottom:-60px;left:40px;width:220px;height:220px;background:radial-gradient(circle,rgba(249,115,22,.04) 0%,transparent 70%);pointer-events:none;}
+.intro h1{font-family:var(--FD);font-size:27px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px;}
+.intro h1 em{font-style:normal;color:var(--amber);}
+.intro p{color:var(--slate);font-size:13px;max-width:600px;font-weight:300;line-height:1.65;}
+.intro-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+.meta-tag{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:5px;padding:4px 11px;font-family:var(--FM);font-size:11px;color:var(--amber-g);letter-spacing:.04em;}
+.pnav{display:flex;gap:6px;flex-wrap:wrap;margin-top:24px;}
+.pndot{width:32px;height:5px;background:var(--navy-l);border-radius:3px;cursor:pointer;transition:background .3s;}
+.pndot.done{background:rgba(245,158,11,.45);}
+.pndot.active{background:var(--amber);}
+
+/* ── MAIN ── */
+.main{max-width:900px;margin:0 auto;padding:36px 24px 130px;display:flex;flex-direction:column;gap:22px;}
+
+/* ── PHASE CARD ── */
+.pc{background:var(--card);border:1px solid var(--bdr);border-radius:12px;overflow:hidden;transition:border-color .3s;animation:fsi .4s ease both;}
+.pc.ap{border-color:var(--bdr-a);box-shadow:0 0 0 1px rgba(245,158,11,.08),0 8px 32px rgba(0,0,0,.35);}
+@keyframes fsi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.ph{display:flex;align-items:center;gap:14px;padding:16px 22px;border-bottom:1px solid var(--bdr);cursor:pointer;user-select:none;transition:background .2s;}
+.ph:hover{background:rgba(255,255,255,.018);}
+.pbadge{font-family:var(--FM);font-size:10px;font-weight:500;background:var(--navy-l);color:var(--amber);border:1px solid rgba(245,158,11,.25);border-radius:4px;padding:3px 8px;letter-spacing:.07em;white-space:nowrap;transition:all .3s;}
+.pbadge.done{background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.3);}
+.ptitle{font-family:var(--FD);font-size:14.5px;font-weight:700;color:var(--white);flex:1;}
+.psub{font-size:11px;color:var(--slate);font-style:italic;font-weight:300;display:none;}
+.pchev{color:var(--slate-d);transition:transform .3s;font-size:16px;}
+.pc.open .pchev{transform:rotate(180deg);}
+.pc.open .psub{display:block;}
+.pb{display:none;padding:22px;animation:fi .25s ease;}
+.pc.open .pb{display:block;}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.phint{background:rgba(245,158,11,.05);border-left:2px solid var(--amber);border-radius:0 6px 6px 0;padding:10px 14px;font-size:12px;color:var(--slate);margin-bottom:18px;line-height:1.55;}
+
+/* ── INNER COLUMNS ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;}
+@media(max-width:640px){.two-col{grid-template-columns:1fr;}}
+.col-divider{border-top:1px solid var(--bdr);margin:16px 0;}
+
+/* ── DROPDOWN ROW ── */
+.drow{display:flex;flex-direction:column;gap:6px;padding:12px 0;border-bottom:1px solid rgba(127,162,200,.07);}
+.drow:last-child{border-bottom:none;}
+.dlabel{font-size:12.5px;color:var(--white);line-height:1.4;}
+.dlabel.triggered{color:var(--amber);}
+select.dsel{background:var(--navy-ll);border:1px solid var(--bdr);border-radius:7px;color:var(--white);font-family:var(--FB);font-size:12.5px;padding:7px 30px 7px 11px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%237fa2c8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;width:100%;transition:border-color .2s;}
+select.dsel:focus{outline:none;border-color:var(--amber);}
+select.dsel option{background:#0d1c2e;}
+select.dsel.answered{border-color:rgba(245,158,11,.3);}
+
+/* ── TICK GROUP ── */
+.tick-section{padding:12px 0;border-bottom:1px solid rgba(127,162,200,.07);}
+.tick-section:last-child{border-bottom:none;}
+.tick-label{font-size:12.5px;color:var(--white);margin-bottom:10px;line-height:1.4;}
+.tick-grid{display:flex;flex-wrap:wrap;gap:7px;}
+.tick-chip{background:var(--navy-l);border:1px solid var(--bdr);border-radius:7px;padding:6px 13px;font-size:12px;color:var(--slate);cursor:pointer;transition:all .2s;user-select:none;display:flex;align-items:center;gap:6px;}
+.tick-chip::before{content:'';width:10px;height:10px;border:1.5px solid var(--slate-d);border-radius:3px;flex-shrink:0;transition:all .2s;}
+.tick-chip:hover{border-color:rgba(245,158,11,.3);color:var(--white);}
+.tick-chip.on{background:rgba(245,158,11,.09);border-color:var(--amber);color:var(--amber-g);}
+.tick-chip.on::before{background:var(--amber);border-color:var(--amber);box-shadow:0 0 5px rgba(245,158,11,.4);}
+
+/* ── TRIGGER NOTE ── */
+.tnote{display:none;align-items:flex-start;gap:6px;background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.2);border-radius:6px;padding:8px 12px;margin-top:7px;font-size:11.5px;color:#fdba74;line-height:1.5;}
+.tnote.show{display:flex;}
+.tnote::before{content:'◆';font-size:10px;flex-shrink:0;margin-top:2px;color:var(--orange);}
+
+/* ── RISK PULSE (score display) ── */
+.risk-pulse{display:flex;align-items:center;gap:16px;background:var(--navy-l);border:1px solid var(--bdr);border-radius:10px;padding:14px 20px;margin-bottom:0;}
+.rp-label{font-family:var(--FM);font-size:11px;color:var(--slate);letter-spacing:.06em;text-transform:uppercase;}
+.rp-bars{display:flex;gap:4px;align-items:flex-end;height:24px;}
+.rp-bar{width:5px;border-radius:2px;background:var(--navy-ll);transition:background .4s,height .4s;}
+.rp-score{font-family:var(--FD);font-size:22px;font-weight:800;color:var(--white);line-height:1;}
+.rp-tier{font-family:var(--FM);font-size:10px;padding:3px 8px;border-radius:4px;letter-spacing:.07em;text-transform:uppercase;}
+.tier-low{background:rgba(34,197,94,.12);color:#86efac;border:1px solid rgba(34,197,94,.25);}
+.tier-med{background:rgba(245,158,11,.12);color:#fcd34d;border:1px solid rgba(245,158,11,.25);}
+.tier-high{background:rgba(249,115,22,.12);color:#fdba74;border:1px solid rgba(249,115,22,.25);}
+.tier-crit{background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.25);}
+
+/* ── CTA FOOTER ── */
+.ctaf{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(to top,var(--navy) 52%,transparent);padding:20px 40px 26px;display:flex;align-items:center;justify-content:space-between;pointer-events:none;}
+.cta-l{pointer-events:auto;}
+.ctxt{font-size:12px;color:var(--slate);font-family:var(--FM);}
+.ctxt b{color:var(--amber);}
+.btn-run{pointer-events:auto;background:var(--amber);color:var(--navy);border:none;border-radius:8px;padding:12px 26px;font-family:var(--FD);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .2s;box-shadow:0 4px 20px rgba(245,158,11,.3);}
+.btn-run:hover{background:var(--amber-g);transform:translateY(-1px);box-shadow:0 6px 28px rgba(245,158,11,.45);}
+.btn-run:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+
+/* ── MODAL ── */
+.mbk{display:none;position:fixed;inset:0;background:rgba(4,8,16,.92);z-index:200;backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:20px;}
+.mbk.open{display:flex;}
+.modal{background:var(--card);border:1px solid var(--bdr-a);border-radius:14px;max-width:800px;width:100%;max-height:90vh;display:flex;flex-direction:column;animation:mi .3s cubic-bezier(.4,0,.2,1);}
+@keyframes mi{from{opacity:0;transform:scale(.95) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.mhdr{padding:20px 26px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;gap:12px;}
+.mhdr h2{font-family:var(--FD);font-size:17px;font-weight:800;color:var(--white);}
+.mhdr p{font-size:11px;color:var(--slate);font-family:var(--FM);margin-top:3px;}
+.mclose{width:32px;height:32px;background:var(--navy-l);border:1px solid var(--bdr);border-radius:6px;cursor:pointer;color:var(--slate);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.mclose:hover{color:var(--white);border-color:var(--slate);}
+.mbody{padding:22px 26px;overflow-y:auto;flex:1;}
+.mftr{padding:14px 26px 20px;border-top:1px solid var(--bdr);display:flex;gap:10px;justify-content:flex-end;flex-shrink:0;}
+
+/* ── LOADING ── */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:20px;}
+.spin{width:44px;height:44px;border:2px solid rgba(245,158,11,.12);border-top-color:var(--amber);border-radius:50%;animation:spin .9s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-lbl{font-family:var(--FM);font-size:12px;color:var(--slate);text-align:center;line-height:1.9;}
+.spin-lbl strong{color:var(--amber);display:block;font-size:13px;margin-bottom:4px;}
+
+/* ── RESULT COMPONENTS ── */
+.r-summary{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);border-radius:9px;padding:14px 16px;margin-bottom:20px;}
+.r-summary .lbl{font-family:var(--FM);font-size:10px;color:var(--amber);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;}
+.r-summary p{font-size:13px;color:var(--white);line-height:1.65;}
+
+/* RAG OVERVIEW */
+.rag-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.rag-cell{background:rgba(255,255,255,.025);border:1px solid var(--bdr);border-radius:8px;padding:12px 14px;text-align:center;}
+.rag-val{font-family:var(--FD);font-size:24px;font-weight:800;line-height:1;}
+.rag-val.c{color:#fca5a5;}
+.rag-val.h{color:#fdba74;}
+.rag-val.m{color:#fcd34d;}
+.rag-val.l{color:#86efac;}
+.rag-lbl{font-family:var(--FM);font-size:10px;color:var(--slate);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;}
+
+/* RISK REGISTER TABLE */
+.rr-section{margin-bottom:20px;}
+.rr-section:last-child{margin-bottom:0;}
+.rs-hdr{display:flex;align-items:center;gap:10px;margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid var(--bdr);}
+.rs-icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.ic-a{background:rgba(245,158,11,.1);}
+.ic-r{background:rgba(239,68,68,.1);}
+.ic-g{background:rgba(34,197,94,.1);}
+.ic-t{background:rgba(20,184,166,.1);}
+.ic-v{background:rgba(167,139,250,.1);}
+.rs-title{font-family:var(--FD);font-size:13px;font-weight:700;color:var(--white);}
+.rs-count{margin-left:auto;font-family:var(--FM);font-size:10px;color:var(--slate-d);background:var(--navy-l);border-radius:10px;padding:2px 8px;}
+
+.risk-items{display:flex;flex-direction:column;gap:7px;}
+.ri{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,.022);border:1px solid var(--bdr);border-radius:7px;transition:border-color .2s;}
+.ri:hover{border-color:rgba(127,162,200,.2);}
+.rag-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.rag-dot.C{background:var(--red);    box-shadow:0 0 5px rgba(239,68,68,.6);}
+.rag-dot.H{background:var(--orange); box-shadow:0 0 5px rgba(249,115,22,.5);}
+.rag-dot.M{background:var(--amber);  box-shadow:0 0 4px rgba(245,158,11,.4);}
+.rag-dot.L{background:var(--green);  box-shadow:0 0 4px rgba(34,197,94,.35);}
+.ri-body{flex:1;}
+.ri-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:3px;}
+.ri-name{font-size:13px;font-weight:600;color:var(--white);line-height:1.3;}
+.ri-badge{border-radius:4px;padding:2px 7px;font-family:var(--FM);font-size:9px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;}
+.rb-C{background:rgba(239,68,68,.12); color:#fca5a5;border:1px solid rgba(239,68,68,.25);}
+.rb-H{background:rgba(249,115,22,.12);color:#fdba74;border:1px solid rgba(249,115,22,.25);}
+.rb-M{background:rgba(245,158,11,.12);color:#fcd34d;border:1px solid rgba(245,158,11,.25);}
+.rb-L{background:rgba(34,197,94,.1);  color:#86efac;border:1px solid rgba(34,197,94,.2);}
+.ri-detail{font-size:12px;color:var(--slate);line-height:1.5;}
+.ri-mitigation{font-size:11.5px;color:rgba(245,158,11,.75);margin-top:4px;padding-top:4px;border-top:1px solid rgba(127,162,200,.08);line-height:1.45;}
+.ri-mitigation::before{content:'→  ';font-family:var(--FM);}
+
+.btn-sec{background:var(--navy-l);border:1px solid var(--bdr);color:var(--slate);border-radius:7px;padding:9px 18px;font-size:12px;cursor:pointer;font-family:var(--FB);transition:all .2s;}
+.btn-sec:hover{color:var(--white);border-color:var(--slate);}
+.btn-pri{background:var(--amber);border:none;color:var(--navy);border-radius:7px;padding:9px 20px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--FD);letter-spacing:.04em;transition:all .2s;}
+.btn-pri:hover{background:var(--amber-g);}
+
+.err{padding:40px;text-align:center;}
+.err .ei{font-size:32px;margin-bottom:10px;}
+.err h3{font-family:var(--FD);font-size:15px;color:var(--amber);margin-bottom:6px;}
+.err p{font-size:12.5px;color:var(--slate);line-height:1.6;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--navy-l);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--slate-d);}
+
+@media(max-width:640px){
+  .hdr{padding:0 16px;}
+  .intro{padding:30px 16px 24px;}
+  .intro h1{font-size:22px;}
+  .main{padding:22px 12px 130px;}
+  .pb{padding:16px;}
+  .ctaf{padding:14px 16px 20px;}
+  .mbody{padding:16px 18px;}
+  .rag-row{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="logo">RiskTrack Pro — Risk Identifier</div>
+  <div class="hpills">
+    <div class="hpill">Risk signals: <b id="flagCount">0</b></div>
+    <div class="hpill">Phases: <b id="doneCount">0</b>&nbsp;/ 7</div>
+  </div>
+</header>
+
+<div class="pbar-wrap"><div class="pbar-fill" id="pbar"></div></div>
+
+<!-- INTRO -->
+<div class="intro">
+  <h1>Strategic Risk <em>Identifier</em></h1>
+  <p>A structured discovery tool for UK housing programme and project risk. Work through 7 consolidated risk domains. The AI Risk Engine will generate a prioritised risk register, RAG ratings and mitigation actions on submission.</p>
+  <div class="intro-meta">
+    <div class="meta-tag">12 risk domains</div>
+    <div class="meta-tag">Consolidated → 7 phases</div>
+    <div class="meta-tag">AI-powered RAG determination</div>
+    <div class="meta-tag">RiskTrack Pro</div>
+  </div>
+  <div class="pnav" id="pnav"></div>
+</div>
+
+<main class="main" id="main"></main>
+
+<!-- CTA -->
+<div class="ctaf">
+  <div class="cta-l">
+    <div class="ctxt" id="ctxt">— Complete phases to build your risk profile</div>
+  </div>
+  <button class="btn-run" id="runBtn" onclick="runAI()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    Generate Risk Register
+  </button>
+</div>
+
+<!-- MODAL -->
+<div class="mbk" id="mbk">
+  <div class="modal">
+    <div class="mhdr">
+      <div>
+        <h2>AI Strategic Risk Register</h2>
+        <p id="mmeta">Powered by RiskTrack Pro · UK Housing Programme Risk Framework</p>
+      </div>
+      <button class="mclose" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mbody" id="mbody"></div>
+    <div class="mftr" id="mftr" style="display:none">
+      <button class="btn-sec" onclick="closeModal()">Refine Inputs</button>
+      <button class="btn-pri" onclick="copyReport()">Copy Risk Register</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── PHASE DATA ───────────────────────────────────────────────────────────────
+// 12 original steps consolidated into 7 phases
+
+const PHASES = [
+  // ── PHASE 01 — Steps 1 + 2 ───────────────────────────────────────────────
+  {
+    id:'gov', num:'01',
+    title:'Strategic Governance & Programme Scale',
+    hint:'Covers governance structure, decision-making authority, regulatory accountability and programme size. Weak governance combined with large scale is the leading driver of programme failure.',
+    questions:[
+      { id:'g1', type:'drop', label:'What governance structure oversees the programme?',
+        opts:['Select…','Dedicated Programme Board','Executive Steering Committee','Department-level oversight','Project-level governance only','Governance structure not yet established'],
+        trigger:'Absence of a dedicated Programme Board is a leading indicator of strategic oversight risk.' },
+      { id:'g2', type:'drop', label:'Are decision-making responsibilities clearly defined?',
+        opts:['Select…','Clearly defined governance structure','Mostly defined with minor gaps','Partially defined','Roles and authority unclear'] },
+      { id:'g3', type:'drop', label:'Which organisation holds regulatory accountability?',
+        opts:['Select…','Local Authority','Registered Provider / Housing Association','Joint Venture governance structure','Private developer-led delivery','Accountability not yet defined'],
+        trigger:'Undefined regulatory accountability creates enforcement gaps and reporting risk.' },
+      { id:'g4', type:'drop', label:'What is the primary strategic driver of the programme?',
+        opts:['Select…','Housing supply targets','Estate regeneration','Building safety remediation','Decarbonisation / retrofit programme','Policy or political commitment','Mixed drivers'],
+        trigger:'Political commitment and policy-driven programmes carry elevated exposure to scope change and external pressure.' },
+      { id:'g5', type:'drop', label:'How many projects are included in the programme?',
+        opts:['Select…','Single project','2–5 projects','6–15 projects','15+ projects'],
+        trigger:'Programmes of 15+ projects carry significant coordination and dependency risk.' },
+      { id:'g6', type:'drop', label:'Does the programme involve multiple project types?',
+        opts:['Select…','Single project type','Limited variation (2 types)','Multiple complex project types'],
+        trigger:'High type variation compounds programme management complexity and requires multi-discipline oversight.' },
+      { id:'g7', type:'drop', label:'Are projects spread across multiple sites or locations?',
+        opts:['Select…','Single site','Multiple sites in one area','Multiple sites across the region'],
+        trigger:'Multi-site regional programmes increase coordination, logistics and supply chain pressure.' }
+    ]
+  },
+
+  // ── PHASE 02 — Steps 3 + 4 ───────────────────────────────────────────────
+  {
+    id:'cap', num:'02',
+    title:'Delivery Capacity & Supply Chain',
+    hint:'Covers internal delivery team resourcing, specialist skills gaps and contractor market conditions. Capacity and supply chain are consistently the highest-impact risk domains in UK housing delivery.',
+    questions:[
+      { id:'c1', type:'drop', label:'What is the internal programme resource capacity?',
+        opts:['Select…','Fully resourced delivery team','Mostly resourced with minor gaps','Partially resourced','Significant capability gaps','Delivery team not yet established'],
+        trigger:'Significant resourcing gaps or an unestablished delivery team are a critical programme risk.' },
+      { id:'c2', type:'tick', label:'Does the programme require specialist expertise? (Select all that apply)',
+        opts:['Fire engineering expertise','Retrofit / decarbonisation specialists','Building safety specialists','Complex structural engineering','None identified'],
+        trigger:'Specialist skills shortages in retrofit and building safety are currently acute in the UK market.' },
+      { id:'c3', type:'drop', label:'Does the organisation have experience delivering similar programmes?',
+        opts:['Select…','Extensive experience','Moderate experience','Limited experience','No comparable experience'],
+        trigger:'No comparable delivery experience significantly elevates programme execution risk.' },
+      { id:'c4', type:'drop', label:'What is the supply chain strategy?',
+        opts:['Select…','Framework contractors secured','Strategic delivery partners appointed','Open procurement per project','Hybrid model','Supply chain strategy not yet defined'],
+        trigger:'Undefined supply chain strategy at programme stage is a major commercial and schedule risk.' },
+      { id:'c5', type:'drop', label:'How would you describe current contractor market conditions?',
+        opts:['Select…','Highly competitive market','Moderate competition','Limited contractor availability','Specialist contractor market only'] },
+      { id:'c6', type:'tick', label:'Which market volatility risks apply? (Select all that apply)',
+        opts:['Inflation risk','Material supply volatility','Labour shortages','Energy cost volatility'],
+        trigger:'Concurrent inflation, material and labour pressures compound cost and programme exposure.' }
+    ]
+  },
+
+  // ── PHASE 03 — Steps 5 + 6 ───────────────────────────────────────────────
+  {
+    id:'land', num:'03',
+    title:'Land, Site & Planning Risk',
+    hint:'Covers land ownership, site constraints, environmental conditions and planning status. Unresolved land and planning risk is among the most common causes of programme delay.',
+    questions:[
+      { id:'l1', type:'drop', label:'What is the land ownership status across the programme?',
+        opts:['Select…','Land fully secured','Majority secured','Partial ownership issues','Land assembly required'],
+        trigger:'Land assembly requirements introduce legal, compulsory purchase and timing risk.' },
+      { id:'l2', type:'tick', label:'Which site constraints are present? (Select all that apply)',
+        opts:['Ground condition uncertainty','Access constraints','Utility infrastructure limitations','Neighbouring property constraints','None known'],
+        trigger:'Multiple concurrent site constraints significantly increase pre-construction risk.' },
+      { id:'l3', type:'tick', label:'Which environmental site conditions apply? (Select all that apply)',
+        opts:['Brownfield / contaminated land','Flood risk zone','Protected habitats','Archaeological sensitivity'],
+        trigger:'Contamination, flood risk and ecological designations require early specialist investigation and may delay planning.' },
+      { id:'l4', type:'drop', label:'What is the current planning status?',
+        opts:['Select…','Planning permission secured','Planning application submitted','Pre-application engagement underway','Planning strategy not yet defined'],
+        trigger:'Undefined planning strategy at programme stage is a material risk to delivery timescales.' },
+      { id:'l5', type:'tick', label:'Which heritage and conservation constraints apply? (Select all that apply)',
+        opts:['Listed building constraints','Conservation area restrictions','Heritage protection requirements','None'],
+        trigger:'Heritage constraints require specialist assessment and may significantly extend pre-delivery programme.' },
+      { id:'l6', type:'tick', label:'Which regulatory approvals are required? (Select all that apply)',
+        opts:['Building Safety Regulator approval required','Environmental impact assessment required','Highway approvals required','Utility authority approvals required'],
+        trigger:'Multiple concurrent regulatory approvals create programme dependency and gateway risk.' }
+    ]
+  },
+
+  // ── PHASE 04 — Step 7 ────────────────────────────────────────────────────
+  {
+    id:'const', num:'04',
+    title:'Construction & Technical Risk',
+    hint:'Covers construction complexity, site hazards and delivery strategy. Technical risk must be assessed against delivery model — self-delivery, contractor or framework.',
+    questions:[
+      { id:'ct1', type:'tick', label:'Which construction complexity factors apply? (Select all that apply)',
+        opts:['Demolition or major strip-out works','High-rise construction (>18m)','Structural alterations to existing buildings','Mixed-use development','Phased or multi-stage construction'],
+        trigger:'High-rise, demolition and phased delivery significantly elevate construction programme and safety risk.' },
+      { id:'ct2', type:'tick', label:'Which site construction risks are present? (Select all that apply)',
+        opts:['Potential asbestos or hazardous materials','Contaminated ground conditions','Complex temporary works required','Construction in occupied buildings'],
+        trigger:'Occupied-building construction and asbestos are the highest-consequence construction site risks.' },
+      { id:'ct3', type:'drop', label:'What is the construction delivery strategy?',
+        opts:['Select…','Single contractor delivery','Multiple contractors across projects','Framework delivery model','Development partner model'],
+        trigger:'Multiple contractors without coordinated oversight introduces interface, quality and programme risk.' }
+    ]
+  },
+
+  // ── PHASE 05 — Steps 8 + 9 ───────────────────────────────────────────────
+  {
+    id:'res', num:'05',
+    title:'Residents, Stakeholders & Funding',
+    hint:'Covers resident occupancy risk, vulnerability profile, stakeholder sensitivity and funding certainty. Resident and political risk are often underweighted in early programme planning.',
+    questions:[
+      { id:'r1', type:'drop', label:'What is the resident occupancy position during works?',
+        opts:['Select…','Vacant possession','Residents remain during works','Partial decant required','Full decant required'],
+        trigger:'Full decant and occupied-works scenarios carry significant resident welfare, legal and reputational risk.' },
+      { id:'r2', type:'drop', label:'What is the resident vulnerability profile?',
+        opts:['Select…','General needs housing','Families with children','Elderly residents','Supported housing / care','Mixed resident profile'],
+        trigger:'Vulnerable and supported residents require tailored engagement strategies and enhanced safeguarding.' },
+      { id:'r3', type:'tick', label:'Which stakeholder risk factors apply? (Select all that apply)',
+        opts:['Community opposition risk','Political sensitivity','Resident displacement concerns','Heritage or conservation concerns'],
+        trigger:'Political sensitivity combined with displacement concerns creates high reputational and programme risk.' },
+      { id:'r4', type:'drop', label:'What is the funding certainty position?',
+        opts:['Select…','Fully funded programme','Majority funding secured','Partial funding secured','Funding strategy still being developed'],
+        trigger:'Funding uncertainty at programme stage is a critical risk to delivery commitment and contract placement.' },
+      { id:'r5', type:'tick', label:'Which grant funding dependencies apply? (Select all that apply)',
+        opts:['Homes England grant milestones','GLA funding conditions','Decarbonisation funding milestones','No grant dependency'],
+        trigger:'Multiple grant milestone dependencies create cascading schedule risk across the programme.' },
+      { id:'r6', type:'drop', label:'What is the cost certainty position?',
+        opts:['Select…','Costs well defined with contingency','Moderate cost uncertainty','Significant cost uncertainty'],
+        trigger:'Significant cost uncertainty alongside partial funding creates a compound commercial risk.' }
+    ]
+  },
+
+  // ── PHASE 06 — Steps 10 + 11 ─────────────────────────────────────────────
+  {
+    id:'dep', num:'06',
+    title:'Dependencies, Integration & Schedule Pressure',
+    hint:'Covers cross-programme dependencies, infrastructure requirements and delivery timeline pressures. Dependency risk is often invisible until it becomes critical.',
+    questions:[
+      { id:'d1', type:'tick', label:'Which cross-programme dependencies exist? (Select all that apply)',
+        opts:['Grant funding cross-project milestones','Shared contractor across schemes','Masterplanning / area-wide planning','Building Safety Gateway approvals','Infrastructure upgrades required'],
+        trigger:'Shared contractors and cross-milestone grant dependencies are leading causes of cascading programme slippage.' },
+      { id:'d2', type:'tick', label:'Which infrastructure dependencies apply? (Select all that apply)',
+        opts:['Utility upgrades required','Transport infrastructure changes','External infrastructure delivery by third parties','None identified'],
+        trigger:'Third-party infrastructure dependencies are outside programme control and carry significant schedule risk.' },
+      { id:'d3', type:'drop', label:'What is the schedule pressure profile?',
+        opts:['Select…','No schedule pressure','Moderate schedule pressure','Significant delivery pressure','Critical delivery deadlines'],
+        trigger:'Critical deadlines with external dependencies create the highest probability of programme failure.' },
+      { id:'d4', type:'tick', label:'Which external delivery drivers are creating schedule pressure? (Select all that apply)',
+        opts:['Political commitments','Grant funding deadlines','Safety remediation deadlines','Regulatory compliance deadlines','None'],
+        trigger:'Safety remediation and regulatory deadlines carry legal consequence if missed — these cannot be negotiated.' }
+    ]
+  },
+
+  // ── PHASE 07 — Step 12 ───────────────────────────────────────────────────
+  {
+    id:'info', num:'07',
+    title:'Information, Data & Design Readiness',
+    hint:'Covers programme data quality, survey completeness and design development stage. Information gaps discovered late are a consistent driver of cost overrun and programme delay.',
+    questions:[
+      { id:'i1', type:'drop', label:'What is the programme information and data certainty?',
+        opts:['Select…','Comprehensive programme data available','Partial data available with known gaps','Significant information gaps','Data position unknown'],
+        trigger:'Significant information gaps at programme stage undermine risk assessment accuracy and cost certainty.' },
+      { id:'i2', type:'drop', label:'What is the design and survey data position?',
+        opts:['Select…','Detailed surveys and design completed','Partial survey information available','Survey and design work not yet commenced'],
+        trigger:'Incomplete survey data is a primary driver of cost variance and programme delay at construction stage.' },
+      { id:'i3', type:'tick', label:'Which information risk factors apply? (Select all that apply)',
+        opts:['Asbestos / hazardous materials surveys outstanding','Structural condition surveys outstanding','EPC / energy assessment data gaps','Legal / title information gaps','Resident data and vulnerabilities not yet profiled'],
+        trigger:'Outstanding surveys at programme mobilisation stage are a direct risk to pre-construction timeline.' }
+    ]
+  }
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+const S = {};
+PHASES.forEach(p => p.questions.forEach(q => {
+  S[q.id] = q.type === 'tick' ? [] : '';
+}));
+
+// ─── BUILD UI ─────────────────────────────────────────────────────────────────
+function buildUI() {
+  const main = document.getElementById('main');
+  const pnav = document.getElementById('pnav');
+
+  PHASES.forEach((phase, idx) => {
+    // Nav dot
+    const dot = document.createElement('div');
+    dot.className = 'pndot' + (idx===0?' active':'');
+    dot.id = `nd_${phase.id}`;
+    dot.title = phase.title;
+    dot.onclick = () => { openPhase(phase.id); document.getElementById(`pc_${phase.id}`).scrollIntoView({behavior:'smooth',block:'start'}); };
+    pnav.appendChild(dot);
+
+    // Card
+    const card = document.createElement('div');
+    card.className = 'pc' + (idx===0?' open ap':'');
+    card.id = `pc_${phase.id}`;
+    card.innerHTML = `
+      <div class="ph" onclick="togglePhase('${phase.id}')">
+        <div class="pbadge" id="pb_${phase.id}">PHASE ${phase.num}</div>
+        <div style="flex:1">
+          <div class="ptitle">${phase.title}</div>
+          <div class="psub">${phase.hint}</div>
+        </div>
+        <div class="pchev">▾</div>
+      </div>
+      <div class="pb">
+        <div class="phint">${phase.hint}</div>
+        <div class="two-col" id="qg_${phase.id}"></div>
+      </div>`;
+    main.appendChild(card);
+
+    const grp = card.querySelector(`#qg_${phase.id}`);
+
+    // Split questions evenly into two columns
+    const left  = document.createElement('div');
+    const right = document.createElement('div');
+    const mid   = Math.ceil(phase.questions.length / 2);
+
+    phase.questions.forEach((q, qi) => {
+      const target = qi < mid ? left : right;
+      renderQuestion(q, target);
+    });
+
+    grp.appendChild(left);
+    grp.appendChild(right);
+  });
+}
+
+function renderQuestion(q, container) {
+  if (q.type === 'drop') {
+    const wrap = document.createElement('div');
+    wrap.className = 'drow';
+    const opts = q.opts.map(o => `<option value="${o==='Select…'?'':o}">${o}</option>`).join('');
+    wrap.innerHTML = `
+      <div class="dlabel" id="dl_${q.id}">${q.label}</div>
+      <select class="dsel" id="${q.id}" onchange="onDrop('${q.id}')">
+        ${opts}
+      </select>`;
+    if (q.trigger) {
+      const tn = document.createElement('div');
+      tn.className = 'tnote'; tn.id = `tn_${q.id}`; tn.textContent = q.trigger;
+      wrap.appendChild(tn);
+    }
+    container.appendChild(wrap);
+  }
+
+  if (q.type === 'tick') {
+    const wrap = document.createElement('div');
+    wrap.className = 'tick-section';
+    wrap.innerHTML = `<div class="tick-label">${q.label}</div>`;
+    const grid = document.createElement('div');
+    grid.className = 'tick-grid';
+    q.opts.forEach(opt => {
+      const chip = document.createElement('div');
+      chip.className = 'tick-chip';
+      chip.textContent = opt;
+      chip.onclick = () => onTick(q.id, opt, chip);
+      grid.appendChild(chip);
+    });
+    wrap.appendChild(grid);
+    if (q.trigger) {
+      const tn = document.createElement('div');
+      tn.className = 'tnote'; tn.id = `tn_${q.id}`; tn.textContent = q.trigger;
+      wrap.appendChild(tn);
+    }
+    container.appendChild(wrap);
+  }
+}
+
+function togglePhase(id) {
+  const card = document.getElementById(`pc_${id}`);
+  const open = card.classList.contains('open');
+  document.querySelectorAll('.pc').forEach(c => c.classList.remove('open','ap'));
+  if (!open) card.classList.add('open','ap');
+}
+function openPhase(id) {
+  document.querySelectorAll('.pc').forEach(c => c.classList.remove('open','ap'));
+  document.getElementById(`pc_${id}`).classList.add('open','ap');
+}
+
+function onDrop(id) {
+  S[id] = document.getElementById(id).value;
+  const el = document.getElementById(id);
+  el.classList.toggle('answered', !!S[id]);
+  const tn = document.getElementById(`tn_${id}`);
+  const risky = ['not yet','unclear','no comparable','not yet defined','significant','critical','full decant','significant cost','significant delivery','partial ownership','land assembly'];
+  if (tn) {
+    const flagged = risky.some(r => S[id].toLowerCase().includes(r));
+    tn.classList.toggle('show', flagged);
+    const lbl = document.getElementById(`dl_${id}`);
+    if (lbl) lbl.classList.toggle('triggered', flagged);
+  }
+  refresh();
+}
+
+function onTick(id, opt, el) {
+  if (opt === 'None identified' || opt === 'None') {
+    // deselect all others
+    S[id] = [opt];
+    el.closest('.tick-grid').querySelectorAll('.tick-chip').forEach(c => c.classList.remove('on'));
+    el.classList.add('on');
+  } else {
+    // remove 'None' if present
+    S[id] = S[id].filter(x => x !== 'None identified' && x !== 'None');
+    el.closest('.tick-grid').querySelectorAll('.tick-chip').forEach(c => {
+      if (c.textContent === 'None identified' || c.textContent === 'None') c.classList.remove('on');
+    });
+    const i = S[id].indexOf(opt);
+    if (i === -1) { S[id].push(opt); el.classList.add('on'); }
+    else          { S[id].splice(i,1); el.classList.remove('on'); }
+  }
+  const tn = document.getElementById(`tn_${id}`);
+  if (tn) {
+    const meaningful = S[id].filter(x => x !== 'None identified' && x !== 'None');
+    tn.classList.toggle('show', meaningful.length >= 2);
+  }
+  refresh();
+}
+
+function refresh() {
+  let done = 0, flags = 0;
+  PHASES.forEach(p => {
+    let hit = false;
+    p.questions.forEach(q => {
+      if (q.type === 'drop' && S[q.id]) { hit = true; flags++; }
+      if (q.type === 'tick' && S[q.id].length > 0 && !S[q.id].every(x => x==='None identified'||x==='None')) {
+        hit = true; flags += S[q.id].length;
+      }
+    });
+    if (hit) {
+      done++;
+      document.getElementById(`nd_${p.id}`).classList.add('done');
+      document.getElementById(`pb_${p.id}`).classList.add('done');
+    } else {
+      document.getElementById(`nd_${p.id}`).classList.remove('done');
+      document.getElementById(`pb_${p.id}`).classList.remove('done');
+    }
+  });
+  document.getElementById('doneCount').textContent = done;
+  document.getElementById('flagCount').textContent = flags;
+  document.getElementById('pbar').style.width = (done / PHASES.length * 100) + '%';
+  document.getElementById('ctxt').innerHTML = done === 0
+    ? '— Complete phases to build your risk profile'
+    : `<b>${done}</b> of 7 phases complete &nbsp;·&nbsp; <b>${flags}</b> risk signals captured`;
+}
+
+// ─── PROMPT BUILDER ───────────────────────────────────────────────────────────
+function buildProfileText() {
+  return PHASES.map(p => {
+    const qs = p.questions.map(q =>
+      q.type === 'drop'
+        ? `  - ${q.label}: ${S[q.id] || 'Not answered'}`
+        : `  - ${q.label}: ${S[q.id].length > 0 ? S[q.id].join(', ') : 'None selected'}`
+    ).join('\n');
+    return `### Phase ${p.num}: ${p.title}\n${qs}`;
+  }).join('\n\n');
+}
+
+// ─── SYSTEM PROMPT ────────────────────────────────────────────────────────────
+const SYS = `You are an AI Strategic Risk Advisor embedded in RiskTrack Pro, a risk and compliance management platform for UK social housing and built environment programmes.
+
+Your task is to analyse a completed Strategic Risk Discovery Profile and produce a structured, prioritised risk register suitable for a Programme Board or Senior Leadership Team. This is programme-level strategic risk analysis — not project-level or site-specific.
+
+───────────────────────────────────────────────
+RISK DOMAINS YOU MUST ASSESS
+───────────────────────────────────────────────
+Assess risks across these domains, drawing from the profile answers:
+
+1. STRATEGIC GOVERNANCE RISK — governance maturity, decision-making clarity, regulatory accountability, political exposure
+2. PROGRAMME SCALE & COMPLEXITY RISK — coordination overhead, dependency management, multi-project interface risk
+3. DELIVERY CAPACITY RISK — internal resourcing, specialist skills gaps, organisational experience
+4. SUPPLY CHAIN & MARKET RISK — contractor availability, inflation, material and labour volatility
+5. LAND & SITE RISK — land assembly, site constraints, environmental conditions
+6. PLANNING & REGULATORY RISK — planning status, heritage constraints, multi-authority approvals
+7. CONSTRUCTION & TECHNICAL RISK — complexity profile, hazardous materials, temporary works, occupied-building delivery
+8. RESIDENT & STAKEHOLDER RISK — resident vulnerability, community opposition, political sensitivity, decant risk
+9. FUNDING & COMMERCIAL RISK — funding certainty, grant milestones, cost uncertainty
+10. PROGRAMME INTEGRATION & DEPENDENCY RISK — cross-project milestones, shared resources, infrastructure dependencies
+11. SCHEDULE & DELIVERY PRESSURE — external deadlines, regulatory and political drivers, timeline criticality
+12. INFORMATION & DATA RISK — survey completeness, design readiness, data gaps
+
+───────────────────────────────────────────────
+RATING FRAMEWORK
+───────────────────────────────────────────────
+Assign each risk a RAG+ rating:
+
+CRITICAL — High likelihood + severe consequence. Immediate programme-level action required. Delivery cannot safely proceed without mitigation.
+HIGH — Significant risk that requires active management and Board-level visibility. Likely to impact cost, schedule or quality without intervention.
+MEDIUM — Moderate risk that requires monitoring and a documented mitigation plan.
+LOW — Low probability or manageable consequence. Record and monitor.
+
+Also provide:
+- Likelihood: HIGH / MEDIUM / LOW
+- Impact: HIGH / MEDIUM / LOW
+- The primary responsible role for owning this risk
+
+───────────────────────────────────────────────
+ANALYSIS RULES
+───────────────────────────────────────────────
+1. Only surface risks genuinely activated by the profile — do not fabricate risks not evidenced by answers.
+2. Be specific: name the risk precisely, explain the causal pathway, and link it to the profile answer that triggered it.
+3. For each risk, provide a practical, prioritised mitigation action — not generic advice.
+4. Where answers are incomplete, flag as uncertainties requiring Board clarification before risk assessment is finalised.
+5. The risk register should feel like it was written by an experienced Programme Risk Manager who knows UK housing delivery — direct, precise and actionable.
+6. Prioritise risks by severity — CRITICAL first, then HIGH, then MEDIUM, then LOW.
+
+───────────────────────────────────────────────
+OUTPUT FORMAT
+───────────────────────────────────────────────
+Return ONLY valid JSON. No markdown fences, no preamble, no trailing text.
+
+{
+  "summary": "3–4 sentence plain-English strategic risk overview for senior leadership. Name the top 2–3 dominant risks and the overall programme risk outlook.",
+  "rag_totals": {
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0
+  },
+  "risk_register": [
+    {
+      "id": "R01",
+      "domain": "Risk domain name",
+      "risk": "Precise risk title",
+      "cause": "What in the programme profile is causing or elevating this risk",
+      "consequence": "What could happen if this risk materialises",
+      "likelihood": "HIGH | MEDIUM | LOW",
+      "impact": "HIGH | MEDIUM | LOW",
+      "rating": "CRITICAL | HIGH | MEDIUM | LOW",
+      "owner": "Responsible role (e.g. Programme Director, Senior Responsible Owner, Finance Director)",
+      "mitigation": "Specific, practical action required to manage or reduce this risk"
+    }
+  ],
+  "top_priorities": [
+    { "rank": 1, "risk": "Risk title", "action": "Single most important immediate action" }
+  ],
+  "uncertainties": [
+    { "item": "What information gap exists", "recommendation": "What clarification is needed before risk register is finalised" }
+  ]
+}`;
+
+// ─── AI RUN ───────────────────────────────────────────────────────────────────
+let lastResult = null;
+
+async function runAI() {
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true;
+
+  document.getElementById('mbody').innerHTML = `
+    <div class="loading">
+      <div class="spin"></div>
+      <div class="spin-lbl">
+        <strong>Analysing risk profile…</strong>
+        Building prioritised risk register across 12 strategic domains
+      </div>
+    </div>`;
+  document.getElementById('mftr').style.display = 'none';
+  document.getElementById('mbk').classList.add('open');
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYS,
+        messages: [{
+          role: 'user',
+          content: `Analyse the following completed Strategic Risk Discovery Profile and produce the AI risk register.\n\nSTRATEGIC RISK DISCOVERY PROFILE\n${'─'.repeat(60)}\n${buildProfileText()}`
+        }]
+      })
+    });
+
+    const data = await res.json();
+    const raw  = data.content?.find(b => b.type === 'text')?.text || '';
+    const json = raw.replace(/```json|```/gi, '').trim();
+    const result = JSON.parse(json);
+    lastResult = result;
+    renderResult(result);
+
+  } catch(err) {
+    document.getElementById('mbody').innerHTML = `
+      <div class="err">
+        <div class="ei">⚠</div>
+        <h3>Analysis Failed</h3>
+        <p>Unable to reach the risk engine. Please check your connection and try again.</p>
+        <p style="margin-top:8px;font-family:var(--FM);font-size:11px;color:var(--slate-d)">${err.message}</p>
+      </div>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function renderResult(r) {
+  let h = '';
+  const totals = r.rag_totals || {};
+
+  // Summary
+  h += `<div class="r-summary"><div class="lbl">Strategic Risk Overview</div><p>${r.summary||''}</p></div>`;
+
+  // RAG overview
+  h += `<div class="rag-row">
+    <div class="rag-cell"><div class="rag-val c">${totals.critical||0}</div><div class="rag-lbl">Critical</div></div>
+    <div class="rag-cell"><div class="rag-val h">${totals.high||0}</div><div class="rag-lbl">High</div></div>
+    <div class="rag-cell"><div class="rag-val m">${totals.medium||0}</div><div class="rag-lbl">Medium</div></div>
+    <div class="rag-cell"><div class="rag-val l">${totals.low||0}</div><div class="rag-lbl">Low</div></div>
+  </div>`;
+
+  // Top priorities
+  if (r.top_priorities?.length) {
+    h += `<div class="rr-section">
+      <div class="rs-hdr">
+        <div class="rs-icon ic-r">🎯</div>
+        <div class="rs-title">Immediate Priority Actions</div>
+        <div class="rs-count">${r.top_priorities.length}</div>
+      </div>
+      <div class="risk-items">
+        ${r.top_priorities.map(x => `
+          <div class="ri">
+            <div class="rag-dot H"></div>
+            <div class="ri-body">
+              <div class="ri-name">${x.rank}. ${x.risk}</div>
+              <div class="ri-detail ri-mitigation" style="border:none;padding:0;margin:0">${x.action}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Risk register grouped by rating
+  const register = r.risk_register || [];
+  ['CRITICAL','HIGH','MEDIUM','LOW'].forEach(lvl => {
+    const items = register.filter(x => (x.rating||'').toUpperCase() === lvl);
+    if (!items.length) return;
+
+    const icon  = {CRITICAL:'🔴',HIGH:'🟠',MEDIUM:'🟡',LOW:'🟢'}[lvl];
+    const icCls = {CRITICAL:'ic-r',HIGH:'ic-a',MEDIUM:'ic-a',LOW:'ic-g'}[lvl];
+
+    h += `<div class="rr-section">
+      <div class="rs-hdr">
+        <div class="rs-icon ${icCls}">${icon}</div>
+        <div class="rs-title">${lvl.charAt(0)+lvl.slice(1).toLowerCase()} Risks</div>
+        <div class="rs-count">${items.length}</div>
+      </div>
+      <div class="risk-items">
+        ${items.map(x => `
+          <div class="ri">
+            <div class="rag-dot ${lvl.charAt(0)}"></div>
+            <div class="ri-body">
+              <div class="ri-top">
+                <div class="ri-name">${x.id} — ${x.risk}</div>
+                <span class="ri-badge rb-${lvl.charAt(0)}">${lvl}</span>
+              </div>
+              <div class="ri-detail" style="margin-bottom:4px">
+                <span style="color:var(--slate-d);font-family:var(--FM);font-size:10px;text-transform:uppercase;letter-spacing:.05em">${x.domain}</span>
+                &nbsp;·&nbsp; L: ${x.likelihood||'—'} &nbsp;·&nbsp; I: ${x.impact||'—'} &nbsp;·&nbsp; Owner: ${x.owner||'—'}
+              </div>
+              <div class="ri-detail">${x.cause}</div>
+              <div class="ri-detail" style="color:#fdba74;margin-top:3px"><em>If unmanaged:</em> ${x.consequence}</div>
+              <div class="ri-mitigation">${x.mitigation}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  });
+
+  // Uncertainties
+  if (r.uncertainties?.length) {
+    h += `<div class="rr-section">
+      <div class="rs-hdr">
+        <div class="rs-icon ic-a">❓</div>
+        <div class="rs-title">Uncertainties — Board Clarification Required</div>
+        <div class="rs-count">${r.uncertainties.length}</div>
+      </div>
+      <div class="risk-items">
+        ${r.uncertainties.map(x => `
+          <div class="ri">
+            <div class="rag-dot M"></div>
+            <div class="ri-body">
+              <div class="ri-name">${x.item}</div>
+              <div class="ri-mitigation">${x.recommendation}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('mbody').innerHTML = h;
+  document.getElementById('mftr').style.display = 'flex';
+
+  const total = register.length;
+  document.getElementById('mmeta').textContent =
+    `${total} risks identified · ${totals.critical||0} Critical · ${totals.high||0} High · RiskTrack Pro`;
+}
+
+function copyReport() {
+  if (!lastResult) return;
+  const r = lastResult;
+  const lines = ['STRATEGIC RISK REGISTER — RiskTrack Pro\n'];
+  lines.push('OVERVIEW\n' + r.summary + '\n');
+  lines.push(`RAG SUMMARY: Critical ${r.rag_totals?.critical||0} | High ${r.rag_totals?.high||0} | Medium ${r.rag_totals?.medium||0} | Low ${r.rag_totals?.low||0}\n`);
+  if (r.top_priorities?.length) {
+    lines.push('IMMEDIATE PRIORITY ACTIONS');
+    r.top_priorities.forEach(x => lines.push(`${x.rank}. ${x.risk}: ${x.action}`));
+    lines.push('');
+  }
+  if (r.risk_register?.length) {
+    lines.push('RISK REGISTER');
+    r.risk_register.forEach(x => {
+      lines.push(`[${x.rating}] ${x.id} — ${x.risk}`);
+      lines.push(`  Domain: ${x.domain} | L: ${x.likelihood} | I: ${x.impact} | Owner: ${x.owner}`);
+      lines.push(`  Cause: ${x.cause}`);
+      lines.push(`  Consequence: ${x.consequence}`);
+      lines.push(`  Mitigation: ${x.mitigation}`);
+      lines.push('');
+    });
+  }
+  navigator.clipboard.writeText(lines.join('\n')).catch(()=>{});
+}
+
+function closeModal() {
+  document.getElementById('mbk').classList.remove('open');
+}
+document.getElementById('mbk').addEventListener('click', e => {
+  if (e.target === document.getElementById('mbk')) closeModal();
+});
+
+buildUI();
+refresh();
+</script>
+</body>
+</html>

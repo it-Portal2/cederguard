@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Compliance Profiler — RiskTrack Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0b1628;
+    --navy-mid: #0e1e38;
+    --navy-light: #1a2f4a;
+    --cyan: #4dd9ff;
+    --cyan-dim: #2ab8e0;
+    --teal: #00b8a0;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --green: #22c55e;
+    --violet: #818cf8;
+    --slate: #8ba3c7;
+    --slate-dim: #4a6080;
+    --white: #eef3ff;
+    --card-bg: #0d1c32;
+    --border: rgba(139,163,199,0.11);
+    --border-active: rgba(77,217,255,0.35);
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--navy-mid);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-logo {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--cyan);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header-logo::before {
+    content: '';
+    width: 7px; height: 7px;
+    background: var(--cyan);
+    border-radius: 2px;
+    box-shadow: 0 0 8px var(--cyan);
+    transform: rotate(45deg);
+  }
+  .header-pills { display:flex; gap:8px; align-items:center; }
+  .pill {
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--slate);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .pill span { color: var(--cyan); font-weight:500; }
+  .pill.type-pill { border-color: rgba(77,217,255,0.2); }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar-wrap {
+    background: var(--navy-mid);
+    height: 3px;
+    position: sticky;
+    top: 60px;
+    z-index: 99;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--teal));
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+  }
+
+  /* ── INTRO ── */
+  .intro-banner {
+    background: linear-gradient(135deg, #0d1c32 0%, #091729 50%, #0d1c32 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 44px 40px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .intro-banner::before {
+    content:'';
+    position:absolute;
+    top:-80px; right:-80px;
+    width:340px; height:340px;
+    background: radial-gradient(circle, rgba(77,217,255,0.05) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .intro-banner::after {
+    content:'';
+    position:absolute;
+    bottom:-40px; left:60px;
+    width:200px; height:200px;
+    background: radial-gradient(circle, rgba(0,184,160,0.04) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .intro-top {
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .intro-banner h1 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .intro-banner h1 em { font-style:normal; color: var(--cyan); }
+  .intro-banner p {
+    color: var(--slate);
+    font-size: 13px;
+    max-width: 580px;
+    font-weight: 300;
+  }
+  .project-type-selector {
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    flex-shrink:0;
+  }
+  .project-type-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--slate-dim);
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+  }
+  .type-chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .type-chip {
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11.5px;
+    color: var(--slate);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select:none;
+    font-family: var(--font-mono);
+    letter-spacing:0.03em;
+  }
+  .type-chip:hover { border-color: rgba(77,217,255,0.3); color:var(--white); }
+  .type-chip.active {
+    background: rgba(77,217,255,0.1);
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+  .phase-nav {
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    margin-top:24px;
+  }
+  .phase-nav-dot {
+    width:28px; height:5px;
+    background: var(--navy-light);
+    border-radius:3px;
+    cursor:pointer;
+    transition: background 0.3s;
+  }
+  .phase-nav-dot.active { background: var(--cyan); }
+  .phase-nav-dot.completed { background: var(--cyan-dim); opacity:0.55; }
+
+  /* ── MAIN ── */
+  .main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 36px 24px 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ── PHASE CARD ── */
+  .phase-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+    animation: fadeSlideIn 0.4s ease both;
+  }
+  .phase-card.active-phase {
+    border-color: var(--border-active);
+    box-shadow: 0 0 0 1px rgba(77,217,255,0.08), 0 8px 32px rgba(0,0,0,0.35);
+  }
+  @keyframes fadeSlideIn {
+    from { opacity:0; transform:translateY(14px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .phase-header {
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:17px 24px;
+    border-bottom:1px solid var(--border);
+    cursor:pointer;
+    user-select:none;
+    transition:background 0.2s;
+  }
+  .phase-header:hover { background:rgba(255,255,255,0.02); }
+  .phase-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight:500;
+    background: var(--navy-light);
+    color: var(--cyan);
+    border: 1px solid rgba(77,217,255,0.25);
+    border-radius: 4px;
+    padding: 3px 8px;
+    letter-spacing:0.08em;
+    white-space:nowrap;
+    transition: all 0.3s;
+  }
+  .phase-badge.done {
+    background: rgba(34,197,94,0.1);
+    color: var(--green);
+    border-color: rgba(34,197,94,0.3);
+  }
+  .phase-title {
+    font-family: var(--font-display);
+    font-size:15px;
+    font-weight:700;
+    color: var(--white);
+    flex:1;
+  }
+  .phase-subtitle {
+    font-size:11px;
+    color: var(--slate);
+    font-style:italic;
+    font-weight:300;
+    display:none;
+  }
+  .phase-chevron {
+    color: var(--slate-dim);
+    transition: transform 0.3s;
+    font-size:16px;
+  }
+  .phase-card.open .phase-chevron { transform:rotate(180deg); }
+  .phase-card.open .phase-subtitle { display:block; }
+  .phase-body {
+    display:none;
+    padding:24px;
+    animation:fadeIn 0.25s ease;
+  }
+  .phase-card.open .phase-body { display:block; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  .phase-hint {
+    background: rgba(77,217,255,0.05);
+    border-left: 2px solid var(--cyan);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    font-size:12px;
+    color: var(--slate);
+    margin-bottom:18px;
+    line-height:1.5;
+  }
+
+  /* ── QUESTION ROW ── */
+  .question-group { display:flex; flex-direction:column; gap:4px; }
+  .question-row {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:11px 0;
+    border-bottom:1px solid rgba(139,163,199,0.07);
+    gap:20px;
+    border-radius:4px;
+    transition:background 0.15s;
+  }
+  .question-row:last-child { border-bottom:none; }
+  .question-row:hover { background:rgba(255,255,255,0.015); }
+  .q-label {
+    font-size:13px;
+    color: var(--white);
+    flex:1;
+    line-height:1.4;
+    transition:color 0.2s;
+  }
+  .q-label.triggered { color: var(--cyan); }
+
+  /* ── SELECT ── */
+  .q-select-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 0;
+    border-bottom:1px solid rgba(139,163,199,0.07);
+  }
+  .q-select-wrap:last-child { border-bottom:none; }
+  .q-select-label {
+    font-size:13px;
+    color: var(--white);
+    line-height:1.4;
+  }
+  select.q-select {
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    padding: 7px 32px 7px 12px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238ba3c7' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    min-width: 220px;
+    transition: border-color 0.2s;
+  }
+  select.q-select:focus { outline:none; border-color: var(--cyan); }
+  select.q-select option { background: #132240; }
+
+  /* ── NUMBER INPUT ── */
+  .q-input-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 0;
+    border-bottom:1px solid rgba(139,163,199,0.07);
+  }
+  .q-input-wrap:last-child { border-bottom:none; }
+  input.q-number {
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 7px 12px;
+    width: 180px;
+    transition: border-color 0.2s;
+  }
+  input.q-number:focus { outline:none; border-color: var(--cyan); }
+  input.q-number::placeholder { color: var(--slate-dim); }
+
+  /* ── TOGGLE ── */
+  .toggle-wrap {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-shrink:0;
+  }
+  .toggle-label {
+    font-family: var(--font-mono);
+    font-size:10px;
+    color: var(--slate-dim);
+    letter-spacing:0.05em;
+    min-width:22px;
+    text-align:right;
+    transition:color 0.2s;
+  }
+  .toggle {
+    position:relative;
+    width:42px; height:23px;
+    cursor:pointer;
+  }
+  .toggle input { opacity:0; width:0; height:0; position:absolute; }
+  .toggle-track {
+    position:absolute; inset:0;
+    background: var(--navy-light);
+    border:1px solid var(--slate-dim);
+    border-radius:12px;
+    transition: background 0.25s, border-color 0.25s;
+  }
+  .toggle-thumb {
+    position:absolute;
+    top:3px; left:3px;
+    width:15px; height:15px;
+    background: var(--slate-dim);
+    border-radius:50%;
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), background 0.25s;
+  }
+  .toggle input:checked ~ .toggle-track {
+    background: rgba(77,217,255,0.12);
+    border-color: var(--cyan);
+  }
+  .toggle input:checked ~ .toggle-thumb {
+    transform:translateX(19px);
+    background: var(--cyan);
+    box-shadow: 0 0 6px rgba(77,217,255,0.5);
+  }
+
+  /* ── CHIPS ── */
+  .chip-group {
+    display:flex; flex-wrap:wrap; gap:7px;
+    margin-top:12px;
+  }
+  .chip {
+    background: var(--navy-light);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:5px 13px;
+    font-size:12px;
+    color: var(--slate);
+    cursor:pointer;
+    transition:all 0.2s;
+    user-select:none;
+  }
+  .chip:hover { border-color:rgba(77,217,255,0.3); color:var(--white); }
+  .chip.selected {
+    background: rgba(77,217,255,0.1);
+    border-color: var(--cyan);
+    color: var(--cyan);
+    font-weight:500;
+  }
+  .chip-label {
+    font-size:11px;
+    font-family: var(--font-mono);
+    color: var(--slate);
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    margin-top:16px; margin-bottom:2px;
+  }
+
+  /* ── TRIGGER NOTE ── */
+  .trigger-note {
+    display:none;
+    align-items:flex-start;
+    gap:6px;
+    background: rgba(245,158,11,0.07);
+    border:1px solid rgba(245,158,11,0.2);
+    border-radius:6px;
+    padding:8px 12px;
+    margin-top:6px;
+    font-size:11.5px;
+    color: #fbbf24;
+    line-height:1.5;
+  }
+  .trigger-note.show { display:flex; }
+  .trigger-note::before { content:'⚠'; font-size:12px; flex-shrink:0; margin-top:1px; }
+
+  /* ── CTA FOOTER ── */
+  .cta-footer {
+    position:fixed;
+    bottom:0; left:0; right:0;
+    background:linear-gradient(to top, var(--navy) 55%, transparent);
+    padding:22px 40px 26px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    pointer-events:none;
+  }
+  .cta-left { pointer-events:auto; }
+  .completion-text {
+    font-size:12px;
+    color: var(--slate);
+    font-family: var(--font-mono);
+  }
+  .completion-text strong { color: var(--cyan); }
+  .btn-analyse {
+    pointer-events:auto;
+    background: var(--cyan);
+    color: var(--navy);
+    border:none;
+    border-radius:8px;
+    padding:12px 26px;
+    font-family: var(--font-display);
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    transition:all 0.2s;
+    box-shadow:0 4px 20px rgba(77,217,255,0.25);
+  }
+  .btn-analyse:hover {
+    background:#69e3ff;
+    transform:translateY(-1px);
+    box-shadow:0 6px 28px rgba(77,217,255,0.4);
+  }
+  .btn-analyse:disabled { opacity:0.45; cursor:not-allowed; transform:none; }
+
+  /* ── MODAL ── */
+  .modal-backdrop {
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(5,10,20,0.9);
+    z-index:200;
+    backdrop-filter:blur(4px);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .modal-backdrop.open { display:flex; }
+  .modal {
+    background: var(--card-bg);
+    border:1px solid var(--border-active);
+    border-radius:14px;
+    max-width:780px;
+    width:100%;
+    max-height:88vh;
+    display:flex;
+    flex-direction:column;
+    animation:modalIn 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+  @keyframes modalIn {
+    from { opacity:0; transform:scale(0.95) translateY(20px); }
+    to   { opacity:1; transform:scale(1)    translateY(0); }
+  }
+  .modal-header {
+    padding:20px 26px 16px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    flex-shrink:0;
+    gap:12px;
+  }
+  .modal-header h2 {
+    font-family: var(--font-display);
+    font-size:17px;
+    font-weight:800;
+    color:var(--white);
+  }
+  .modal-header p {
+    font-size:11px;
+    color: var(--slate);
+    font-family: var(--font-mono);
+    margin-top:3px;
+  }
+  .modal-close {
+    width:32px; height:32px;
+    background: var(--navy-light);
+    border:1px solid var(--border);
+    border-radius:6px;
+    cursor:pointer;
+    color: var(--slate);
+    font-size:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:all 0.2s;
+    flex-shrink:0;
+  }
+  .modal-close:hover { color:var(--white); border-color:var(--slate); }
+  .modal-body {
+    padding:22px 26px;
+    overflow-y:auto;
+    flex:1;
+  }
+  .modal-footer {
+    padding:14px 26px 20px;
+    border-top:1px solid var(--border);
+    display:flex;
+    gap:10px;
+    justify-content:flex-end;
+    flex-shrink:0;
+  }
+
+  /* ── LOADING ── */
+  .loading-state {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:60px 20px;
+    gap:20px;
+  }
+  .loading-spinner {
+    width:44px; height:44px;
+    border:2px solid rgba(77,217,255,0.12);
+    border-top-color: var(--cyan);
+    border-radius:50%;
+    animation:spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .loading-label {
+    font-family: var(--font-mono);
+    font-size:12px;
+    color: var(--slate);
+    text-align:center;
+    line-height:1.9;
+  }
+  .loading-label strong { color:var(--cyan); display:block; font-size:13px; margin-bottom:4px; }
+
+  /* ── RESULT ── */
+  .summary-banner {
+    background: rgba(77,217,255,0.06);
+    border:1px solid rgba(77,217,255,0.18);
+    border-radius:8px;
+    padding:13px 16px;
+    margin-bottom:20px;
+  }
+  .summary-banner .lbl {
+    font-family: var(--font-mono);
+    font-size:10px;
+    color: var(--cyan);
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    margin-bottom:5px;
+  }
+  .summary-banner p { font-size:13px; color:var(--white); line-height:1.6; }
+
+  .result-section { margin-bottom:20px; }
+  .result-section:last-child { margin-bottom:0; }
+  .rs-header {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:9px;
+    padding-bottom:9px;
+    border-bottom:1px solid var(--border);
+  }
+  .rs-icon {
+    width:26px; height:26px;
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    flex-shrink:0;
+  }
+  .ic-blue   { background:rgba(77,217,255,0.1); }
+  .ic-red    { background:rgba(239,68,68,0.1); }
+  .ic-amber  { background:rgba(245,158,11,0.1); }
+  .ic-green  { background:rgba(34,197,94,0.1); }
+  .ic-purple { background:rgba(129,140,248,0.1); }
+
+  .rs-title {
+    font-family: var(--font-display);
+    font-size:13px;
+    font-weight:700;
+    color:var(--white);
+  }
+  .rs-count {
+    margin-left:auto;
+    font-family: var(--font-mono);
+    font-size:10px;
+    color: var(--slate-dim);
+    background: var(--navy-light);
+    border-radius:10px;
+    padding:2px 8px;
+  }
+
+  .result-items { display:flex; flex-direction:column; gap:7px; }
+  .ri {
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:10px 12px;
+    background:rgba(255,255,255,0.025);
+    border:1px solid var(--border);
+    border-radius:7px;
+    transition:border-color 0.2s;
+  }
+  .ri:hover { border-color:rgba(139,163,199,0.2); }
+  .ri-dot { width:6px; height:6px; border-radius:50%; margin-top:6px; flex-shrink:0; }
+  .d-blue   { background:var(--cyan); }
+  .d-red    { background:var(--red);    box-shadow:0 0 4px rgba(239,68,68,0.5); }
+  .d-amber  { background:var(--amber);  box-shadow:0 0 4px rgba(245,158,11,0.4); }
+  .d-green  { background:var(--green); }
+  .d-purple { background:var(--violet); }
+
+  .ri-text { font-size:12.5px; color:var(--white); line-height:1.5; }
+  .ri-text strong { display:block; font-weight:600; margin-bottom:2px; }
+  .ri-text span   { color:var(--slate); font-size:12px; }
+
+  .risk-badge {
+    display:inline-flex;
+    align-items:center;
+    border-radius:4px;
+    padding:2px 7px;
+    font-family: var(--font-mono);
+    font-size:9px;
+    font-weight:500;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    margin-left:6px;
+    vertical-align:middle;
+  }
+  .rb-red   { background:rgba(239,68,68,0.12);  color:#fca5a5; border:1px solid rgba(239,68,68,0.25); }
+  .rb-amber { background:rgba(245,158,11,0.12); color:#fcd34d; border:1px solid rgba(245,158,11,0.25); }
+  .rb-green { background:rgba(34,197,94,0.1);   color:#86efac; border:1px solid rgba(34,197,94,0.2); }
+
+  .btn-secondary {
+    background:var(--navy-light);
+    border:1px solid var(--border);
+    color:var(--slate);
+    border-radius:7px;
+    padding:9px 18px;
+    font-size:12px;
+    cursor:pointer;
+    font-family: var(--font-body);
+    transition:all 0.2s;
+  }
+  .btn-secondary:hover { color:var(--white); border-color:var(--slate); }
+  .btn-primary {
+    background:var(--cyan);
+    border:none;
+    color:var(--navy);
+    border-radius:7px;
+    padding:9px 20px;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    font-family: var(--font-display);
+    letter-spacing:0.04em;
+    transition:all 0.2s;
+  }
+  .btn-primary:hover { background:#69e3ff; }
+
+  .error-state { padding:40px; text-align:center; }
+  .error-state .ei { font-size:32px; margin-bottom:10px; }
+  .error-state h3  { font-family:var(--font-display); font-size:15px; color:var(--amber); margin-bottom:6px; }
+  .error-state p   { font-size:12.5px; color:var(--slate); line-height:1.6; }
+
+  ::-webkit-scrollbar { width:5px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--navy-light); border-radius:3px; }
+  ::-webkit-scrollbar-thumb:hover { background:var(--slate-dim); }
+
+  @media (max-width:640px) {
+    .header { padding:0 16px; }
+    .intro-banner { padding:30px 16px 26px; }
+    .intro-banner h1 { font-size:21px; }
+    .main { padding:22px 12px 120px; }
+    .phase-body { padding:16px; }
+    .cta-footer { padding:14px 16px 18px; }
+    .modal-body { padding:16px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-logo">RiskTrack Pro — Project Profiler</div>
+  <div class="header-pills">
+    <div class="pill type-pill" id="typePill">Type: <span id="typePillVal">Not set</span></div>
+    <div class="pill">Sections: <span id="completedCount">0</span>&nbsp;/ 10</div>
+  </div>
+</header>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="progressBar"></div>
+</div>
+
+<div class="intro-banner">
+  <div class="intro-top">
+    <div>
+      <h1>Project Compliance <em>Determination</em></h1>
+      <p>Site-specific and contract-level compliance profiling. Complete each section to generate a targeted AI determination covering applicable legislation, CDM duties, HRB obligations, planning requirements and delivery risk factors.</p>
+    </div>
+    <div class="project-type-selector">
+      <div class="project-type-label">Project type</div>
+      <div class="type-chips">
+        <div class="type-chip" onclick="setType('Construction / Refurbishment')">Construction / Refurb</div>
+        <div class="type-chip" onclick="setType('New Build Development')">New Build</div>
+        <div class="type-chip" onclick="setType('Decarbonisation / Retrofit')">Decarbonisation</div>
+        <div class="type-chip" onclick="setType('Single Building — HRB / BSA')">HRB / BSA</div>
+      </div>
+    </div>
+  </div>
+  <div class="phase-nav" id="phaseNav"></div>
+</div>
+
+<main class="main" id="mainContent"></main>
+
+<div class="cta-footer">
+  <div class="cta-left">
+    <div class="completion-text" id="completionText">— Set project type and answer questions</div>
+  </div>
+  <button class="btn-analyse" id="analyseBtn" onclick="runAIAnalysis()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    Analyse &amp; Determine Compliance
+  </button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>AI Project Compliance Determination</h2>
+        <p id="modalMeta">Powered by RiskTrack Pro · UK Housing & Construction Regulatory Framework</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter" style="display:none">
+      <button class="btn-secondary" onclick="closeModal()">Edit Responses</button>
+      <button class="btn-primary" onclick="copyReport()">Copy Report</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── PROJECT TYPE ─────────────────────────────────────────────────────────────
+let projectType = '';
+
+function setType(t) {
+  projectType = t;
+  document.getElementById('typePillVal').textContent = t;
+  document.querySelectorAll('.type-chip').forEach(c => c.classList.toggle('active', c.textContent.trim() === t.replace('Construction / Refurbishment','Construction / Refurb')));
+  refresh();
+}
+
+// ── PHASES ───────────────────────────────────────────────────────────────────
+const PHASES = [
+  {
+    id:'scope', num:'01',
+    title:'Project Scope & Delivery Context',
+    hint:'Establishes the nature, scale and delivery mechanism of the project.',
+    questions:[
+      { id:'p1_type', type:'select', label:'What best describes this project?',
+        options:['Select…','New build residential construction','Refurbishment of existing housing stock','Demolition and rebuild','Structural extension or alteration','Decarbonisation / energy efficiency retrofit','Cladding remediation','Internal fit-out or communal works only','Estate infrastructure works'] },
+      { id:'p1_client', type:'select', label:'Who is the client organisation?',
+        options:['Select…','Local Authority','Registered Provider / Housing Association','Private Developer','Joint Venture / Special Purpose Vehicle','Other public body'] },
+      { id:'p1_units', type:'select', label:'How many residential units does the project affect?',
+        options:['Select…','1–10 units','11–50 units','51–100 units','101–250 units','251–500 units','500+ units'] },
+      { id:'p1_value', type:'select', label:'What is the estimated contract value?',
+        options:['Select…','Under £50,000','£50,000–£250,000','£250,000–£1 million','£1m–£5 million','£5m–£20 million','Over £20 million'] },
+      { id:'p1_occupied', type:'toggle', label:'Will the building(s) be occupied during construction / works?',
+        trigger:'Occupied works require an Occupancy Risk Plan, welfare segregation and resident notification protocols.' },
+      { id:'p1_phased', type:'toggle', label:'Will the project be delivered in phases or multiple stages?' }
+    ]
+  },
+  {
+    id:'building', num:'02',
+    title:'Building Characteristics',
+    hint:'Determines Higher-Risk Building (HRB) classification and structural obligations.',
+    questions:[
+      { id:'p2_height', type:'select', label:'What is the height of the building(s)?',
+        options:['Select…','Under 11 metres','11–18 metres','18–30 metres','30–50 metres','Over 50 metres'] },
+      { id:'p2_storeys', type:'select', label:'How many storeys does the tallest building have?',
+        options:['Select…','1–2 storeys','3–6 storeys','7 storeys','8–15 storeys','16–30 storeys','30+ storeys'] },
+      { id:'p2_use', type:'multi', label:'What is the primary use classification of the building(s)?',
+        options:['Residential — general needs','Residential — sheltered / later living','Supported / care housing','Mixed-use (residential + commercial)','Student accommodation','Hotel / short-stay','Commercial / office only'] },
+      { id:'p2_hrb', type:'toggle', label:'Has the building been formally classified as a Higher-Risk Building (HRB)?',
+        trigger:'Formal HRB classification requires registration with the Building Safety Regulator and full Gateway compliance.' },
+      { id:'p2_listed', type:'toggle', label:'Is the building a listed structure?',
+        trigger:'Listed Building Consent is required from the Local Planning Authority for any works affecting its character.' },
+      { id:'p2_conservation', type:'toggle', label:'Is the building located in a conservation area?',
+        trigger:'Conservation area location requires additional heritage impact assessment and may restrict permitted development.' },
+      { id:'p2_cladding', type:'toggle', label:'Does the building have existing cladding systems to be replaced or remediated?',
+        trigger:'Cladding remediation on buildings ≥11m may engage the Building Safety Fund and requires a cladding remediation plan.' }
+    ]
+  },
+  {
+    id:'hrb', num:'03',
+    title:'Building Safety Act Compliance',
+    hint:'Determines BSA 2022 Gateway regime, Golden Thread and statutory duty holder requirements.',
+    questions:[
+      { id:'p3_g2', type:'toggle', label:'Will the project require Gateway 2 approval before construction commences?',
+        trigger:'Gateway 2 approval from the Building Safety Regulator is mandatory for all new HRBs before works begin.' },
+      { id:'p3_g3', type:'toggle', label:'Will the project require Gateway 3 approval before occupation?',
+        trigger:'Gateway 3 (completion certificate) is required from the BSR before any HRB can be occupied.' },
+      { id:'p3_golden', type:'toggle', label:'Will a Golden Thread of building safety information need to be established?',
+        trigger:'The Golden Thread must be digital, version-controlled and maintained throughout the building lifecycle.' },
+      { id:'p3_ap', type:'toggle', label:'Will an Accountable Person (AP) need to be appointed or confirmed?',
+        trigger:'The AP holds statutory responsibility for safety in occupied HRBs under BSA 2022 Section 72.' },
+      { id:'p3_bsm', type:'toggle', label:'Will a Building Safety Manager (BSM) need to be appointed?',
+        trigger:'The BSM is appointed by the AP to manage day-to-day building safety and resident engagement.' },
+      { id:'p3_safety_case', type:'toggle', label:'Will a Building Safety Case and Safety Case Report be required?',
+        trigger:'A Safety Case Report must be submitted to the BSR and updated at registration renewal.' },
+      { id:'p3_residents', type:'toggle', label:'Will a Residents Engagement Strategy be required under BSA 2022?',
+        trigger:'Registered HRBs must have a documented strategy for engaging residents on building safety matters.' }
+    ]
+  },
+  {
+    id:'cdm', num:'04',
+    title:'Construction & CDM Duties',
+    hint:'Determines CDM 2015 duty holder appointments, HSE notifications and site safety obligations.',
+    questions:[
+      { id:'p4_notifiable', type:'toggle', label:'Is the project notifiable to the HSE under CDM 2015?',
+        trigger:'Projects lasting more than 30 working days with 20+ simultaneous workers, or 500+ person-days, must be notified via F10.' },
+      { id:'p4_pd', type:'toggle', label:'Has a Principal Designer been appointed for this project?',
+        trigger:'Principal Designer appointment is mandatory under CDM 2015 where more than one contractor is involved.' },
+      { id:'p4_pc', type:'toggle', label:'Has a Principal Contractor been appointed?',
+        trigger:'The Principal Contractor must produce the Construction Phase Plan and manage site safety.' },
+      { id:'p4_cpp', type:'toggle', label:'Has a Construction Phase Plan been prepared?',
+        trigger:'The CPP must be prepared by the Principal Contractor before construction commences.' },
+      { id:'p4_demolition', type:'toggle', label:'Will the project involve any demolition works?',
+        trigger:'Demolition requires pre-demolition structural survey, hazardous materials assessment and HSE notification.' },
+      { id:'p4_structural', type:'toggle', label:'Will the project involve structural alterations to existing fabric?' },
+      { id:'p4_hazmat', type:'toggle', label:'Has a hazardous materials survey (asbestos, lead) been carried out?',
+        trigger:'Asbestos survey required before any works on buildings constructed before 2000. Licensed contractor required for licensable works.' },
+      { id:'p4_temporary', type:'toggle', label:'Will temporary works (scaffolding, propping, shoring) be required?',
+        trigger:'Significant temporary works require a Temporary Works Coordinator and formal design approval.' }
+    ]
+  },
+  {
+    id:'residents', num:'05',
+    title:'Residents, Leaseholders & Decant',
+    hint:'Determines resident rights, Section 20 consultation and decant obligations.',
+    questions:[
+      { id:'p5_s20', type:'toggle', label:'Will service charges be levied on leaseholders to recover works costs?',
+        trigger:'Qualifying works above £250 per leaseholder require Section 20 consultation under the Landlord and Tenant Act 1985.' },
+      { id:'p5_decant', type:'toggle', label:'Will any residents need to be temporarily decanted during works?',
+        trigger:'Decanting requires individual decant agreements, like-for-like accommodation and an approved Decant Policy.' },
+      { id:'p5_vulnerable', type:'toggle', label:'Are any residents in the works area classified as vulnerable or having protected characteristics?',
+        trigger:'Equality Act 2010 PSED obligations apply. An Equality Impact Assessment may be required.' },
+      { id:'p5_supported', type:'toggle', label:'Is the building supported housing or registered care accommodation?',
+        trigger:'CQC registration and Care Act 2014 obligations apply to works on registered care premises.' },
+      { id:'p5_consultation', type:'toggle', label:'Will a formal resident consultation process be required before works commence?',
+        trigger:'RSH Consumer Standards require meaningful consultation. Resident Liaison Officer appointment recommended.' },
+      { id:'p5_party_wall', type:'toggle', label:'Will works affect any party walls or shared structures with neighbouring properties?',
+        trigger:'Party Wall etc. Act 1996 notices must be served at least 2 months before commencement. Surveyor appointment may follow.' }
+    ]
+  },
+  {
+    id:'decarbonisation', num:'06',
+    title:'Decarbonisation & Retrofit',
+    hint:'Determines SHDF grant obligations, EPC requirements and energy efficiency compliance.',
+    questions:[
+      { id:'p6_shdf', type:'toggle', label:'Is the project funded through the Social Housing Decarbonisation Fund (SHDF)?',
+        trigger:'SHDF funding requires whole-house approach delivery, PAS 2035 compliance and post-works EPC validation.' },
+      { id:'p6_pas', type:'toggle', label:'Will the project need to comply with PAS 2035 (Retrofit Standard)?',
+        trigger:'PAS 2035 requires appointment of a Retrofit Coordinator and Assessor before works commence.' },
+      { id:'p6_epc', type:'select', label:'What is the current EPC rating of the properties in scope?',
+        options:['Select…','A','B','C','D','E','F','G','Mixed / unknown'] },
+      { id:'p6_target_epc', type:'select', label:'What is the target EPC rating post-works?',
+        options:['Select…','A','B','C','D','Not applicable'] },
+      { id:'p6_measures', type:'multi', label:'Which retrofit measures are included in the project scope?',
+        options:['External wall insulation','Internal wall insulation','Loft / roof insulation','Heat pump installation','Solar PV','Ventilation (MVHR)','Windows / doors replacement','Heating controls','Hot water cylinder upgrade'] },
+      { id:'p6_moisture', type:'toggle', label:'Has a pre-works moisture / damp and mould risk assessment been carried out?',
+        trigger:'Pre-works risk assessment is required to prevent retrofit causing condensation or moisture issues (Awaab\'s Law awareness).' },
+      { id:'p6_pv', type:'toggle', label:'Will solar PV or battery storage systems be installed?',
+        trigger:'Grid connection notification to DNO required. G98/G99 applications may apply. MCS certification of installer required.' }
+    ]
+  },
+  {
+    id:'procurement', num:'07',
+    title:'Contract & Procurement',
+    hint:'Determines procurement route, threshold obligations and contract governance.',
+    questions:[
+      { id:'p7_route', type:'select', label:'What procurement route is being used for this project?',
+        options:['Select…','Open procedure','Restricted procedure','Competitive dialogue','Direct award (framework call-off)','Direct award (waiver)','Design and build','Traditional (separate design)','Two-stage tender'] },
+      { id:'p7_framework', type:'toggle', label:'Is the contract being called off from an existing framework agreement?' },
+      { id:'p7_threshold', type:'toggle', label:'Does the contract value exceed the Procurement Act 2023 works threshold (£5.372m)?',
+        trigger:'Contracts above threshold require FIND/transparency notices and full procurement compliance under the Procurement Act 2023.' },
+      { id:'p7_jv', type:'toggle', label:'Does the project involve a joint venture, SPV or development partner?',
+        trigger:'JV structures require governance agreements, SPV setup documentation and legal sign-off before contract award.' },
+      { id:'p7_form', type:'select', label:'What contract form is being used?',
+        options:['Select…','JCT Standard Building Contract','JCT Design and Build','NEC4 ECC','NEC4 PSC','PCSA','Other bespoke form','Not yet determined'] },
+      { id:'p7_bond', type:'toggle', label:'Will a performance bond or parent company guarantee be required?',
+        trigger:'Bonds and guarantees must be in place before contract commencement. Require specialist legal review.' },
+      { id:'p7_sv', type:'toggle', label:'Does the contract include social value requirements?',
+        trigger:'Social value commitments must be measurable and reported. Align with the Social Value Act 2012 and SHDF requirements where applicable.' }
+    ]
+  },
+  {
+    id:'planning', num:'08',
+    title:'Planning & Development',
+    hint:'Determines planning permission requirements, heritage constraints and development controls.',
+    questions:[
+      { id:'p8_pp', type:'toggle', label:'Does the project require full planning permission?',
+        trigger:'Full planning permission required before any material operations commence on site.' },
+      { id:'p8_pd', type:'toggle', label:'Will works be carried out under permitted development rights?',
+        trigger:'Confirm PD rights apply. A Lawful Development Certificate may be advisable to evidence compliance.' },
+      { id:'p8_change_use', type:'toggle', label:'Does the project involve a change of land use?',
+        trigger:'Change of use requires a formal planning application and may trigger S106/CIL obligations.' },
+      { id:'p8_s106', type:'toggle', label:'Will the project trigger a Section 106 agreement or CIL liability?',
+        trigger:'S106 heads of terms must be agreed with the LPA before planning permission is granted.' },
+      { id:'p8_bng', type:'toggle', label:'Will the project require Biodiversity Net Gain (BNG) compliance?',
+        trigger:'Mandatory 10% BNG applies to planning permissions in England from February 2024. A Biodiversity Metric assessment is required.' },
+      { id:'p8_flood', type:'toggle', label:'Is the site located in a flood risk zone (Zone 2 or 3)?',
+        trigger:'Flood Risk Assessment and Sequential Test required before planning application is submitted.' },
+      { id:'p8_eia', type:'toggle', label:'Is an Environmental Impact Assessment (EIA) required or likely?',
+        trigger:'EIA is required for Schedule 1/2 development under the T&CP (EIA) Regulations 2017.' }
+    ]
+  },
+  {
+    id:'environment', num:'09',
+    title:'Environmental & Site Constraints',
+    hint:'Determines ground conditions, contamination, ecology and environmental permitting obligations.',
+    questions:[
+      { id:'p9_brownfield', type:'toggle', label:'Is the site brownfield or previously developed land?' },
+      { id:'p9_contamination', type:'toggle', label:'Is the site known to be contaminated or are investigations outstanding?',
+        trigger:'Contaminated land requires Phase 1 / Phase 2 Environmental Site Investigation and a Remediation Strategy.' },
+      { id:'p9_ecology', type:'toggle', label:'Are there protected species or habitats on or adjacent to the site?',
+        trigger:'Protected species survey and Ecological Impact Assessment required before works. Natural England licensing may apply.' },
+      { id:'p9_trees', type:'toggle', label:'Are there protected trees (TPO) or trees in a conservation area on or adjacent to the site?',
+        trigger:'Works to TPO trees require LPA consent. Arboricultural Impact Assessment and Method Statement needed.' },
+      { id:'p9_groundwater', type:'toggle', label:'Are there groundwater or drainage constraints on the site?',
+        trigger:'Sustainable Urban Drainage System (SuDS) approval required from Lead Local Flood Authority for new drainage systems.' },
+      { id:'p9_noise', type:'toggle', label:'Will construction activities generate significant noise or vibration impacts?',
+        trigger:'Noise/vibration mitigation plan required. Prior consent under Section 61 COPA 1974 recommended.' }
+    ]
+  },
+  {
+    id:'health', num:'10',
+    title:'Health, Safety & Welfare',
+    hint:'Determines site welfare obligations, fire safety management and emergency planning requirements.',
+    questions:[
+      { id:'p10_welfare', type:'toggle', label:'Have site welfare facilities been provided in accordance with CDM 2015 Schedule 2?',
+        trigger:'Minimum welfare standards must be in place before works commence: toilets, washing, rest, changing, drinking water.' },
+      { id:'p10_fire', type:'toggle', label:'Will fire safety management during works require a specific fire strategy or interim measures?',
+        trigger:'Occupied buildings under refurbishment require an Interim Fire Risk Management Plan and waking watch assessment.' },
+      { id:'p10_emergency', type:'toggle', label:'Will an emergency plan and site evacuation procedures be required?',
+        trigger:'Construction Phase Plan must include emergency arrangements. Evacuation drill required for occupied sites.' },
+      { id:'p10_traffic', type:'toggle', label:'Will the project require a construction traffic management plan?',
+        trigger:'CTMP required where construction vehicles will significantly affect public roads or pedestrian routes.' },
+      { id:'p10_safe_systems', type:'toggle', label:'Are there specific safe systems of work required (e.g., working at height, confined spaces, hot works)?',
+        trigger:'Permit-to-work systems and method statements required for high-risk activities under the Health & Safety at Work Act.' },
+      { id:'p10_insurance', type:'toggle', label:'Has contractor insurance (employers liability, public liability, professional indemnity) been confirmed?',
+        trigger:'Minimum insurance levels must be confirmed and evidenced before contract commencement.' }
+    ]
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+const S = {};
+PHASES.forEach(p => p.questions.forEach(q => {
+  if (q.type==='toggle')  S[q.id] = false;
+  if (q.type==='multi')   S[q.id] = [];
+  if (q.type==='select')  S[q.id] = '';
+}));
+
+// ── BUILD UI ──────────────────────────────────────────────────────────────────
+function buildUI() {
+  const main = document.getElementById('mainContent');
+  const nav  = document.getElementById('phaseNav');
+
+  PHASES.forEach((phase, idx) => {
+    const dot = document.createElement('div');
+    dot.className = 'phase-nav-dot' + (idx===0?' active':'');
+    dot.id = `nav_${phase.id}`;
+    dot.title = phase.title;
+    dot.onclick = () => { openPhase(phase.id); document.getElementById(`card_${phase.id}`).scrollIntoView({behavior:'smooth',block:'start'}); };
+    nav.appendChild(dot);
+
+    const card = document.createElement('div');
+    card.className = 'phase-card' + (idx===0?' open active-phase':'');
+    card.id = `card_${phase.id}`;
+    card.innerHTML = `
+      <div class="phase-header" onclick="togglePhase('${phase.id}')">
+        <div class="phase-badge" id="badge_${phase.id}">PHASE ${phase.num}</div>
+        <div style="flex:1">
+          <div class="phase-title">${phase.title}</div>
+          <div class="phase-subtitle">${phase.hint}</div>
+        </div>
+        <div class="phase-chevron">▾</div>
+      </div>
+      <div class="phase-body">
+        <div class="phase-hint">${phase.hint}</div>
+        <div class="question-group" id="qg_${phase.id}"></div>
+      </div>`;
+    main.appendChild(card);
+
+    const grp = card.querySelector(`#qg_${phase.id}`);
+    phase.questions.forEach(q => {
+
+      // ── TOGGLE ──
+      if (q.type==='toggle') {
+        const row = document.createElement('div');
+        row.className = 'question-row';
+        row.innerHTML = `
+          <div class="q-label" id="ql_${q.id}">${q.label}</div>
+          <div class="toggle-wrap">
+            <span class="toggle-label" id="tl_${q.id}">NO</span>
+            <label class="toggle">
+              <input type="checkbox" id="${q.id}" onchange="onToggle('${q.id}')">
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>`;
+        if (q.trigger) {
+          const tn = document.createElement('div');
+          tn.className='trigger-note'; tn.id=`tn_${q.id}`; tn.textContent=q.trigger;
+          row.appendChild(tn);
+        }
+        grp.appendChild(row);
+      }
+
+      // ── SELECT ──
+      if (q.type==='select') {
+        const wrap = document.createElement('div');
+        wrap.className = 'question-row q-select-wrap';
+        wrap.style.flexDirection = 'column';
+        wrap.style.alignItems = 'flex-start';
+        wrap.style.gap = '8px';
+        const opts = q.options.map(o=>`<option value="${o==='Select…'?'':o}">${o}</option>`).join('');
+        wrap.innerHTML = `
+          <div class="q-select-label">${q.label}</div>
+          <select class="q-select" id="${q.id}" onchange="onSelect('${q.id}')">
+            ${opts}
+          </select>`;
+        grp.appendChild(wrap);
+      }
+
+      // ── MULTI ──
+      if (q.type==='multi') {
+        const wrap = document.createElement('div');
+        wrap.innerHTML = `<div class="chip-label">${q.label}</div>`;
+        const cg = document.createElement('div'); cg.className='chip-group';
+        q.options.forEach(opt => {
+          const c = document.createElement('div'); c.className='chip'; c.textContent=opt;
+          c.onclick = () => onChip(q.id, opt, c);
+          cg.appendChild(c);
+        });
+        wrap.appendChild(cg);
+        grp.appendChild(wrap);
+      }
+    });
+  });
+}
+
+function togglePhase(id) {
+  const card = document.getElementById(`card_${id}`);
+  const open = card.classList.contains('open');
+  document.querySelectorAll('.phase-card').forEach(c=>c.classList.remove('open','active-phase'));
+  if (!open) card.classList.add('open','active-phase');
+}
+function openPhase(id) {
+  document.querySelectorAll('.phase-card').forEach(c=>c.classList.remove('open','active-phase'));
+  document.getElementById(`card_${id}`).classList.add('open','active-phase');
+}
+
+function onToggle(id) {
+  const cb = document.getElementById(id);
+  S[id] = cb.checked;
+  document.getElementById(`tl_${id}`).textContent = cb.checked?'YES':'NO';
+  const tn = document.getElementById(`tn_${id}`);
+  if (tn) tn.classList.toggle('show', cb.checked);
+  document.getElementById(`ql_${id}`).classList.toggle('triggered', cb.checked);
+  refresh();
+}
+function onSelect(id) {
+  S[id] = document.getElementById(id).value;
+  refresh();
+}
+function onChip(id, opt, el) {
+  const a=S[id], i=a.indexOf(opt);
+  if (i===-1){a.push(opt);el.classList.add('selected');}
+  else{a.splice(i,1);el.classList.remove('selected');}
+  refresh();
+}
+
+function refresh() {
+  let done=0, flags=0;
+  PHASES.forEach(p => {
+    let hit=false;
+    p.questions.forEach(q => {
+      if (q.type==='toggle' && S[q.id])          { hit=true; flags++; }
+      if (q.type==='multi'  && S[q.id].length>0) hit=true;
+      if (q.type==='select' && S[q.id])          hit=true;
+    });
+    if (hit) {
+      done++;
+      document.getElementById(`nav_${p.id}`).classList.add('completed');
+      document.getElementById(`badge_${p.id}`).classList.add('done');
+    } else {
+      document.getElementById(`nav_${p.id}`).classList.remove('completed');
+      document.getElementById(`badge_${p.id}`).classList.remove('done');
+    }
+  });
+  document.getElementById('completedCount').textContent = done;
+  document.getElementById('progressBar').style.width = (done/PHASES.length*100)+'%';
+  const txt = document.getElementById('completionText');
+  txt.innerHTML = done===0 && !projectType
+    ? '— Set project type and answer questions'
+    : `<strong>${done}</strong> of 10 sections profiled &nbsp;·&nbsp; <strong>${flags}</strong> site-level triggers flagged`;
+}
+
+// ── PROMPT BUILDER ────────────────────────────────────────────────────────────
+function buildProfileText() {
+  const lines = [`Project Type: ${projectType || 'Not specified'}\n`];
+  PHASES.forEach(p => {
+    lines.push(`### ${p.num}. ${p.title}`);
+    p.questions.forEach(q => {
+      if (q.type==='toggle') lines.push(`  - ${q.label}: ${S[q.id]?'YES':'NO'}`);
+      if (q.type==='select') lines.push(`  - ${q.label}: ${S[q.id]||'Not answered'}`);
+      if (q.type==='multi')  lines.push(`  - ${q.label}: ${S[q.id].length>0?S[q.id].join(', '):'None selected'}`);
+    });
+    lines.push('');
+  });
+  return lines.join('\n');
+}
+
+// ── SYSTEM PROMPT ─────────────────────────────────────────────────────────────
+const SYS = `You are an AI Regulatory Compliance Advisor embedded in RiskTrack Pro, a compliance and risk management platform for UK social housing and built environment programmes.
+
+Your task is to analyse a completed Project Compliance Profile — covering a single construction, refurbishment, decarbonisation or new build project — and produce a precise, practical compliance determination at project and site level.
+
+This is a PROJECT-LEVEL determination, not a programme-level one. Focus on:
+- Site-specific statutory duties and duty holder appointments
+- Contract-level regulatory obligations triggered by project characteristics
+- Building-specific safety, planning and environmental requirements
+- Individual leaseholder and resident rights applicable to the project
+- Specific approvals required before works can lawfully commence or complete
+
+───────────────────────────────────────────────
+REGULATORY FRAMEWORKS IN SCOPE
+───────────────────────────────────────────────
+Apply only frameworks genuinely triggered by the project profile:
+
+BUILDING SAFETY (BSA 2022)
+• Building Safety Act 2022 — HRB classification triggers, Gateway 2 (pre-construction) and Gateway 3 (pre-occupation), Golden Thread of Information, Accountable Person duties (Section 72), Building Safety Manager, Safety Case and Safety Case Report, Residents Engagement Strategy
+• Building Safety Regulator (BSR) — registration and oversight of HRBs
+• Fire Safety Act 2021 — fire risk assessment, interim fire measures during works
+• Building Regulations 2010 — compliance for building works, Part L (energy), Part F (ventilation)
+
+CONSTRUCTION SAFETY (CDM 2015)
+• CDM 2015 — Principal Designer and Principal Contractor appointments, Construction Phase Plan, Health & Safety File, F10 HSE notification (notifiable projects: >30 working days with 20+ workers, or >500 person-days)
+• Temporary Works: BS 5975 / CIRIA C760 — Temporary Works Coordinator appointment, design approval
+• Asbestos Regulations 2012 — survey requirement for pre-2000 buildings, licensed contractor for licensable work
+• Working at Height Regulations 2005 — scaffolding, MEWP, permit-to-work
+
+LEASEHOLDER & RESIDENT RIGHTS
+• Landlord and Tenant Act 1985 — Section 20 qualifying works consultation (triggered where service charge recovery exceeds £250 per leaseholder)
+• Housing Act 1985 / 1996 — decant duties, rehousing obligations
+• Care Act 2014 / CQC regulation — supported and care housing works
+• Equality Act 2010 (PSED) — works affecting residents with protected characteristics; EqIA requirement
+• Party Wall etc. Act 1996 — notices to adjoining owners (2 months for party wall works, 1 month for line of junction)
+
+DECARBONISATION & RETROFIT
+• PAS 2035:2023 — whole-house retrofit standard, Retrofit Coordinator and Retrofit Assessor appointment mandatory
+• Social Housing Decarbonisation Fund (SHDF) — programme-specific grant conditions, post-works EPC validation, whole-house approach requirement
+• Domestic Minimum Energy Efficiency Standard (MEES) — EPC E minimum for let properties
+• MCS certification — required for solar PV, heat pump installation
+• G98/G99 Engineering Recommendations — DNO notification for grid-connected generation
+
+PROCUREMENT & CONTRACT
+• Procurement Act 2023 (effective February 2025) — above-threshold works contracts (£5.372m), transparency notices, competitive procedures
+• JCT / NEC contract conditions — specific obligations triggered by contract form selected
+• Social Value Act 2012 — social value obligations where applicable
+
+PLANNING & DEVELOPMENT
+• Town and Country Planning Act 1990 — full planning permission, lawful development certificate
+• Planning (Listed Buildings and Conservation Areas) Act 1990 — Listed Building Consent, conservation area controls
+• Town & Country Planning (EIA) Regulations 2017 — Environmental Impact Assessment for Schedule 1/2 development
+• Community Infrastructure Levy / Section 106 — developer contributions
+• Environment Act 2021 — Biodiversity Net Gain (mandatory 10%, England, from February 2024)
+• Flood Risk Regulations 2009 — Flood Risk Assessment, Sequential Test
+
+ENVIRONMENTAL & SITE
+• Environmental Protection Act 1990 — contaminated land obligations
+• Contaminated Land (England) Regulations 2006 — remediation notices
+• Wildlife and Countryside Act 1981 — protected species and habitats
+• Town and Country Planning (Tree Preservation) (England) Regulations 2012 — TPO consent
+• Control of Pollution Act 1974 (Section 61) — prior consent for construction noise
+
+HEALTH, SAFETY & WELFARE
+• Health & Safety at Work Act 1974
+• CDM 2015 Schedule 2 — minimum site welfare standards
+• Employer's Liability (Compulsory Insurance) Act 1969 — insurance confirmation
+
+───────────────────────────────────────────────
+ANALYSIS RULES
+───────────────────────────────────────────────
+1. Apply strict regulatory trigger logic. Only surface regulations genuinely activated by the profile answers.
+2. Be specific: cite the regulation, the trigger (e.g. building height, contract value), and the precise practical obligation.
+3. Identify the responsible duty holder where relevant (e.g. Principal Contractor, Accountable Person, Retrofit Coordinator).
+4. Flag any incomplete or ambiguous answers as compliance uncertainties requiring clarification before works commence.
+5. Assign risk level to each compliance risk: HIGH / MEDIUM / LOW.
+6. Write for project managers, contract administrators and site teams — actionable, not theoretical.
+
+───────────────────────────────────────────────
+OUTPUT FORMAT
+───────────────────────────────────────────────
+Return ONLY valid JSON. No markdown, no preamble, no trailing text.
+
+{
+  "summary": "2–3 sentence plain-English overview of the project's compliance complexity, primary obligations and key pre-commencement actions.",
+  "applicable_regulations": [
+    { "name": "Legislation / regulation name", "trigger": "What in the profile activates this and what it requires" }
+  ],
+  "regulatory_authorities": [
+    { "name": "Authority or regulator name", "role": "Their specific jurisdiction or oversight function for this project" }
+  ],
+  "mandatory_compliance_actions": [
+    { "action": "Specific compliance action", "duty_holder": "Who is responsible", "detail": "What this means in practice before or during works" }
+  ],
+  "required_approvals": [
+    { "approval": "Approval name", "detail": "When required, from whom, and what it unlocks or gates" }
+  ],
+  "pre_commencement_checklist": [
+    { "item": "Pre-commencement requirement", "detail": "Why it must be in place before works begin" }
+  ],
+  "compliance_risk_profile": [
+    { "risk": "Risk title", "detail": "Why this is a risk and consequence if unmanaged", "level": "HIGH | MEDIUM | LOW" }
+  ],
+  "uncertainties": [
+    { "item": "What is unclear", "recommendation": "What clarification is needed before determination is finalised" }
+  ]
+}`;
+
+// ── AI ANALYSIS ───────────────────────────────────────────────────────────────
+let lastResult = null;
+
+async function runAIAnalysis() {
+  const btn = document.getElementById('analyseBtn');
+  btn.disabled = true;
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <div class="loading-label">
+        <strong>Analysing project profile…</strong>
+        Determining site-specific obligations, duty holders and pre-commencement requirements
+      </div>
+    </div>`;
+  document.getElementById('modalFooter').style.display = 'none';
+  document.getElementById('modalBackdrop').classList.add('open');
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system: SYS,
+        messages:[{
+          role:'user',
+          content:`Analyse the following completed project compliance profile and produce the structured compliance determination.\n\nPROJECT COMPLIANCE PROFILE\n${'─'.repeat(60)}\n${buildProfileText()}`
+        }]
+      })
+    });
+
+    const data = await res.json();
+    const raw  = data.content?.find(b=>b.type==='text')?.text || '';
+    const json = raw.replace(/```json|```/gi,'').trim();
+    const result = JSON.parse(json);
+    lastResult = result;
+    renderResult(result);
+
+  } catch(err) {
+    document.getElementById('modalBody').innerHTML = `
+      <div class="error-state">
+        <div class="ei">⚠</div>
+        <h3>Analysis Failed</h3>
+        <p>Unable to reach the compliance engine. Please check your connection and try again.</p>
+        <p style="margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--slate-dim)">${err.message}</p>
+      </div>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function sec(icon, ic, title, count, items) {
+  return `<div class="result-section">
+    <div class="rs-header">
+      <div class="rs-icon ${ic}">${icon}</div>
+      <div class="rs-title">${title}</div>
+      <div class="rs-count">${count}</div>
+    </div>
+    <div class="result-items">${items}</div>
+  </div>`;
+}
+
+function item(dc, strong, detail) {
+  return `<div class="ri"><div class="ri-dot ${dc}"></div><div class="ri-text"><strong>${strong}</strong><span>${detail}</span></div></div>`;
+}
+
+function renderResult(r) {
+  let h = '';
+
+  h += `<div class="summary-banner">
+    <div class="lbl">Project Compliance Summary</div>
+    <p>${r.summary||''}</p>
+  </div>`;
+
+  if (r.applicable_regulations?.length)
+    h += sec('📋','ic-blue','Applicable Legislation',r.applicable_regulations.length,
+      r.applicable_regulations.map(x=>item('d-blue',x.name,x.trigger)).join(''));
+
+  if (r.regulatory_authorities?.length)
+    h += sec('🏛','ic-purple','Regulatory Authorities',r.regulatory_authorities.length,
+      r.regulatory_authorities.map(x=>item('d-purple',x.name,x.role)).join(''));
+
+  if (r.mandatory_compliance_actions?.length)
+    h += sec('✅','ic-green','Mandatory Compliance Actions',r.mandatory_compliance_actions.length,
+      r.mandatory_compliance_actions.map(x=>item('d-green',
+        `${x.action} <span style="color:var(--cyan);font-size:11px;font-family:var(--font-mono)">[${x.duty_holder||''}]</span>`,
+        x.detail)).join(''));
+
+  if (r.required_approvals?.length)
+    h += sec('🔐','ic-amber','Required Approvals',r.required_approvals.length,
+      r.required_approvals.map(x=>item('d-amber',x.approval,x.detail)).join(''));
+
+  if (r.pre_commencement_checklist?.length)
+    h += sec('📌','ic-blue','Pre-Commencement Checklist',r.pre_commencement_checklist.length,
+      r.pre_commencement_checklist.map(x=>item('d-blue',x.item,x.detail)).join(''));
+
+  if (r.compliance_risk_profile?.length)
+    h += sec('⚠','ic-red','Compliance Risk Profile',r.compliance_risk_profile.length,
+      r.compliance_risk_profile.map(x=>{
+        const lv=(x.level||'MEDIUM').toUpperCase();
+        const bc=lv==='HIGH'?'rb-red':lv==='LOW'?'rb-green':'rb-amber';
+        const dc=lv==='HIGH'?'d-red':lv==='LOW'?'d-green':'d-amber';
+        return `<div class="ri"><div class="ri-dot ${dc}"></div><div class="ri-text">
+          <strong>${x.risk}<span class="risk-badge ${bc}">${lv}</span></strong>
+          <span>${x.detail}</span></div></div>`;
+      }).join(''));
+
+  if (r.uncertainties?.length)
+    h += sec('❓','ic-amber','Uncertainties & Clarifications Needed',r.uncertainties.length,
+      r.uncertainties.map(x=>item('d-amber',x.item,x.recommendation)).join(''));
+
+  document.getElementById('modalBody').innerHTML = h;
+  document.getElementById('modalFooter').style.display = 'flex';
+
+  const regs   = r.applicable_regulations?.length||0;
+  const acts   = r.mandatory_compliance_actions?.length||0;
+  const checks = r.pre_commencement_checklist?.length||0;
+  const risks  = r.compliance_risk_profile?.length||0;
+  document.getElementById('modalMeta').textContent =
+    `${regs} regulations · ${acts} actions · ${checks} pre-commencement items · ${risks} risk factors`;
+}
+
+function copyReport() {
+  if (!lastResult) return;
+  const r = lastResult;
+  const lines = [`PROJECT COMPLIANCE DETERMINATION — RiskTrack Pro\nProject Type: ${projectType}\n`];
+  lines.push('SUMMARY\n'+r.summary+'\n');
+  if (r.applicable_regulations?.length) {
+    lines.push('APPLICABLE LEGISLATION');
+    r.applicable_regulations.forEach(x=>lines.push(`• ${x.name} — ${x.trigger}`));
+    lines.push('');
+  }
+  if (r.mandatory_compliance_actions?.length) {
+    lines.push('MANDATORY COMPLIANCE ACTIONS');
+    r.mandatory_compliance_actions.forEach(x=>lines.push(`• [${x.duty_holder}] ${x.action}: ${x.detail}`));
+    lines.push('');
+  }
+  if (r.pre_commencement_checklist?.length) {
+    lines.push('PRE-COMMENCEMENT CHECKLIST');
+    r.pre_commencement_checklist.forEach(x=>lines.push(`• ${x.item}: ${x.detail}`));
+    lines.push('');
+  }
+  if (r.compliance_risk_profile?.length) {
+    lines.push('COMPLIANCE RISK PROFILE');
+    r.compliance_risk_profile.forEach(x=>lines.push(`[${x.level}] ${x.risk} — ${x.detail}`));
+    lines.push('');
+  }
+  if (r.uncertainties?.length) {
+    lines.push('UNCERTAINTIES / CLARIFICATIONS NEEDED');
+    r.uncertainties.forEach(x=>lines.push(`• ${x.item}: ${x.recommendation}`));
+  }
+  navigator.clipboard.writeText(lines.join('\n')).catch(()=>{});
+}
+
+function closeModal() {
+  document.getElementById('modalBackdrop').classList.remove('open');
+}
+document.getElementById('modalBackdrop').addEventListener('click', e=>{
+  if (e.target===document.getElementById('modalBackdrop')) closeModal();
+});
+
+buildUI();
+refresh();
+</script>
+</body>
+</html>

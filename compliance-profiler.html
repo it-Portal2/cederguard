@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programme Compliance Profiler — RiskTrack Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0b1628;
+    --navy-mid: #132240;
+    --navy-light: #1e3356;
+    --teal: #00b8a0;
+    --teal-dim: #009e89;
+    --cyan: #4dd9ff;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --green: #22c55e;
+    --slate: #8ba3c7;
+    --slate-dim: #4a6080;
+    --white: #f0f4ff;
+    --card-bg: #0f1e35;
+    --border: rgba(139,163,199,0.12);
+    --border-active: rgba(0,184,160,0.4);
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: var(--navy-mid);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-logo {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--teal);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header-logo::before {
+    content: '';
+    width: 7px; height: 7px;
+    background: var(--teal);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--teal);
+  }
+  .progress-pill {
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--slate);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .progress-pill span { color: var(--teal); font-weight: 500; }
+
+  .progress-bar-wrap {
+    background: var(--navy-mid);
+    height: 3px;
+    position: sticky;
+    top: 60px;
+    z-index: 99;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--cyan));
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+  }
+
+  .intro-banner {
+    background: linear-gradient(135deg, #0f1e35 0%, #0b2040 50%, #0f1e35 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 40px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .intro-banner::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(0,184,160,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .intro-banner h1 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .intro-banner h1 em { font-style: normal; color: var(--teal); }
+  .intro-banner p {
+    color: var(--slate);
+    font-size: 13px;
+    max-width: 620px;
+    font-weight: 300;
+  }
+  .phase-nav {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+  }
+  .phase-nav-dot {
+    width: 28px; height: 5px;
+    background: var(--navy-light);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .phase-nav-dot.active { background: var(--teal); }
+  .phase-nav-dot.completed { background: var(--teal-dim); opacity: 0.6; }
+
+  .main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .phase-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+    animation: fadeSlideIn 0.4s ease both;
+  }
+  .phase-card.active-phase {
+    border-color: var(--border-active);
+    box-shadow: 0 0 0 1px rgba(0,184,160,0.1), 0 8px 32px rgba(0,0,0,0.3);
+  }
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .phase-header:hover { background: rgba(255,255,255,0.02); }
+  .phase-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    background: var(--navy-light);
+    color: var(--teal);
+    border: 1px solid rgba(0,184,160,0.3);
+    border-radius: 4px;
+    padding: 3px 8px;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    transition: all 0.3s;
+  }
+  .phase-badge.done {
+    background: rgba(34,197,94,0.1);
+    color: var(--green);
+    border-color: rgba(34,197,94,0.3);
+  }
+  .phase-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    flex: 1;
+  }
+  .phase-subtitle {
+    font-size: 11px;
+    color: var(--slate);
+    font-style: italic;
+    font-weight: 300;
+    display: none;
+  }
+  .phase-chevron {
+    color: var(--slate-dim);
+    transition: transform 0.3s;
+    font-size: 16px;
+  }
+  .phase-card.open .phase-chevron { transform: rotate(180deg); }
+  .phase-card.open .phase-subtitle { display: block; }
+  .phase-body {
+    display: none;
+    padding: 24px;
+    animation: fadeIn 0.25s ease;
+  }
+  .phase-card.open .phase-body { display: block; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .phase-hint {
+    background: rgba(0,184,160,0.06);
+    border-left: 2px solid var(--teal);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--slate);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .question-group { display: flex; flex-direction: column; gap: 4px; }
+  .question-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(139,163,199,0.07);
+    gap: 20px;
+    border-radius: 4px;
+    transition: background 0.15s;
+  }
+  .question-row:last-child { border-bottom: none; }
+  .question-row:hover { background: rgba(255,255,255,0.015); }
+  .q-label {
+    font-size: 13px;
+    color: var(--white);
+    flex: 1;
+    line-height: 1.4;
+    transition: color 0.2s;
+  }
+  .q-label.triggered { color: var(--teal); }
+
+  .toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .toggle-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--slate-dim);
+    letter-spacing: 0.05em;
+    min-width: 22px;
+    text-align: right;
+    transition: color 0.2s;
+  }
+  .toggle {
+    position: relative;
+    width: 42px;
+    height: 23px;
+    cursor: pointer;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: var(--navy-light);
+    border: 1px solid var(--slate-dim);
+    border-radius: 12px;
+    transition: background 0.25s, border-color 0.25s;
+  }
+  .toggle-thumb {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 15px; height: 15px;
+    background: var(--slate-dim);
+    border-radius: 50%;
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), background 0.25s;
+  }
+  .toggle input:checked ~ .toggle-track {
+    background: rgba(0,184,160,0.15);
+    border-color: var(--teal);
+  }
+  .toggle input:checked ~ .toggle-thumb {
+    transform: translateX(19px);
+    background: var(--teal);
+    box-shadow: 0 0 6px rgba(0,184,160,0.5);
+  }
+
+  .chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .chip {
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--slate);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .chip:hover { border-color: rgba(0,184,160,0.3); color: var(--white); }
+  .chip.selected {
+    background: rgba(0,184,160,0.12);
+    border-color: var(--teal);
+    color: var(--teal);
+    font-weight: 500;
+  }
+  .chip-label {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--slate);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-top: 16px;
+    margin-bottom: 4px;
+  }
+
+  .trigger-note {
+    display: none;
+    align-items: flex-start;
+    gap: 6px;
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-top: 6px;
+    font-size: 11.5px;
+    color: #fbbf24;
+    line-height: 1.5;
+  }
+  .trigger-note.show { display: flex; }
+  .trigger-note::before { content: '⚠'; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+
+  .cta-footer {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, var(--navy) 55%, transparent);
+    padding: 24px 40px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+  .cta-left { pointer-events: auto; }
+  .completion-text {
+    font-size: 12px;
+    color: var(--slate);
+    font-family: var(--font-mono);
+  }
+  .completion-text strong { color: var(--teal); }
+  .btn-analyse {
+    pointer-events: auto;
+    background: var(--teal);
+    color: var(--navy);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 28px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(0,184,160,0.3);
+  }
+  .btn-analyse:hover {
+    background: #00d4bb;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px rgba(0,184,160,0.45);
+  }
+  .btn-analyse:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* MODAL */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(7,12,24,0.9);
+    z-index: 200;
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--card-bg);
+    border: 1px solid var(--border-active);
+    border-radius: 14px;
+    max-width: 760px;
+    width: 100%;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    animation: modalIn 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal-header {
+    padding: 22px 28px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .modal-header h2 {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--white);
+  }
+  .modal-header p {
+    font-size: 11px;
+    color: var(--slate);
+    font-family: var(--font-mono);
+    margin-top: 3px;
+  }
+  .modal-close {
+    width: 32px; height: 32px;
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--slate);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .modal-close:hover { color: var(--white); border-color: var(--slate); }
+  .modal-body {
+    padding: 24px 28px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .modal-footer {
+    padding: 16px 28px 22px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-shrink: 0;
+  }
+
+  /* LOADING */
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    gap: 20px;
+  }
+  .loading-spinner {
+    width: 44px; height: 44px;
+    border: 2px solid rgba(0,184,160,0.15);
+    border-top-color: var(--teal);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--slate);
+    text-align: center;
+    line-height: 1.9;
+  }
+  .loading-label strong {
+    color: var(--teal);
+    display: block;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  /* RESULT */
+  .summary-banner {
+    background: rgba(0,184,160,0.07);
+    border: 1px solid rgba(0,184,160,0.2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 22px;
+  }
+  .summary-banner .label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--teal);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .summary-banner p { font-size: 13px; color: var(--white); line-height: 1.6; }
+
+  .result-section { margin-bottom: 22px; }
+  .result-section:last-child { margin-bottom: 0; }
+  .rs-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .rs-icon {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .ic-blue   { background: rgba(77,217,255,0.1); }
+  .ic-red    { background: rgba(239,68,68,0.1); }
+  .ic-amber  { background: rgba(245,158,11,0.1); }
+  .ic-green  { background: rgba(34,197,94,0.1); }
+  .ic-purple { background: rgba(167,139,250,0.1); }
+
+  .rs-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .rs-count {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--slate-dim);
+    background: var(--navy-light);
+    border-radius: 10px;
+    padding: 2px 8px;
+  }
+
+  .result-items { display: flex; flex-direction: column; gap: 7px; }
+  .ri {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    transition: border-color 0.2s;
+  }
+  .ri:hover { border-color: rgba(139,163,199,0.2); }
+  .ri-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+  .d-blue   { background: var(--cyan); }
+  .d-red    { background: var(--red);   box-shadow: 0 0 4px rgba(239,68,68,0.5); }
+  .d-amber  { background: var(--amber); box-shadow: 0 0 4px rgba(245,158,11,0.4); }
+  .d-green  { background: var(--green); }
+  .d-purple { background: #a78bfa; }
+
+  .ri-text { font-size: 12.5px; color: var(--white); line-height: 1.5; }
+  .ri-text strong { display: block; font-weight: 600; margin-bottom: 2px; }
+  .ri-text span   { color: var(--slate); font-size: 12px; }
+
+  .risk-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .rb-red    { background: rgba(239,68,68,0.12);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); }
+  .rb-amber  { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
+  .rb-green  { background: rgba(34,197,94,0.1);   color: #86efac; border: 1px solid rgba(34,197,94,0.2); }
+
+  /* BUTTONS */
+  .btn-secondary {
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    color: var(--slate);
+    border-radius: 7px;
+    padding: 9px 18px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { color: var(--white); border-color: var(--slate); }
+  .btn-primary {
+    background: var(--teal);
+    border: none;
+    color: var(--navy);
+    border-radius: 7px;
+    padding: 9px 20px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font-display);
+    letter-spacing: 0.04em;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { background: #00d4bb; }
+
+  .error-state { padding: 40px; text-align: center; }
+  .error-state .ei { font-size: 32px; margin-bottom: 10px; }
+  .error-state h3 { font-family: var(--font-display); font-size: 15px; color: var(--amber); margin-bottom: 6px; }
+  .error-state p  { font-size: 12.5px; color: var(--slate); line-height: 1.6; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--slate-dim); }
+
+  @media (max-width: 640px) {
+    .header { padding: 0 16px; }
+    .intro-banner { padding: 32px 18px 28px; }
+    .intro-banner h1 { font-size: 22px; }
+    .main { padding: 24px 12px 120px; }
+    .phase-body { padding: 16px; }
+    .cta-footer { padding: 16px 18px 20px; }
+    .modal-body { padding: 16px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-logo">RiskTrack Pro — Compliance Profiler</div>
+  <div class="progress-pill">
+    Sections complete: <span id="completedCount">0</span>&nbsp;/ 10
+  </div>
+</header>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="progressBar"></div>
+</div>
+
+<div class="intro-banner">
+  <h1>Programme Compliance <em>Determination</em></h1>
+  <p>Complete each section to build your programme's regulatory profile. The AI Compliance Advisor will determine applicable legislation, statutory obligations, required approvals and risk factors on submission.</p>
+  <div class="phase-nav" id="phaseNav"></div>
+</div>
+
+<main class="main" id="mainContent"></main>
+
+<div class="cta-footer">
+  <div class="cta-left">
+    <div class="completion-text" id="completionText">— Answer questions to build your profile</div>
+  </div>
+  <button class="btn-analyse" id="analyseBtn" onclick="runAIAnalysis()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    Analyse &amp; Generate Requirements
+  </button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>AI Compliance Determination</h2>
+        <p id="modalMeta">Powered by RiskTrack Pro · UK Housing Regulatory Framework</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter" style="display:none">
+      <button class="btn-secondary" onclick="closeModal()">Edit Responses</button>
+      <button class="btn-primary" onclick="copyReport()">Copy Report</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── PHASES DATA ──────────────────────────────────────────────────────────────
+const PHASES = [
+  {
+    id:'org', num:'01',
+    title:'Organisation & Regulatory Status',
+    hint:'Determines whether housing regulatory oversight applies to this programme.',
+    questions:[
+      {id:'q1_1',type:'toggle',label:'Is the programme being delivered by a Local Authority?'},
+      {id:'q1_2',type:'toggle',label:'Is the programme being delivered by a Registered Provider / Housing Association?'},
+      {id:'q1_3',type:'toggle',label:'Is the organisation regulated by the Regulator of Social Housing (RSH)?',
+       trigger:'RSH regulation triggers mandatory Consumer Standards compliance and reporting obligations.'},
+      {id:'q1_4',type:'toggle',label:'Will the programme deliver social or affordable housing units?'},
+      {id:'q1_5',type:'toggle',label:'Will the programme require reporting to the Regulator of Social Housing?',
+       trigger:'RSH reporting requires formal data returns and evidence packs.'},
+      {id:'q1_6',type:'toggle',label:'Will the programme involve public sector funding or government grants?',
+       trigger:'Public funding triggers Homes England AHP compliance and value-for-money obligations.'}
+    ]
+  },
+  {
+    id:'tenure', num:'02',
+    title:'Housing Tenure & Residents',
+    hint:'Determines obligations under housing law and consumer standards.',
+    questions:[
+      {id:'q2_tenures',type:'multi',label:'What housing tenures are included in the programme?',
+       options:['Social Rent','Affordable Rent','Shared Ownership','Leasehold','Temporary Accommodation','Supported Housing','Market Sale']},
+      {id:'q2_1',type:'toggle',label:'Will existing tenants remain in occupation during works?'},
+      {id:'q2_2',type:'toggle',label:'Will residents require temporary relocation or decanting?',
+       trigger:'Decanting obligations require a Housing Decant Policy and Section 39 Housing Act duties.'},
+      {id:'q2_3',type:'toggle',label:'Will the programme affect leaseholder-owned properties?'},
+      {id:'q2_4',type:'toggle',label:'Will costs of works be recovered through service charges to leaseholders?',
+       trigger:'Section 20 consultation obligations apply for qualifying works above £250 per leaseholder.'},
+      {id:'q2_5',type:'toggle',label:'Will the programme involve supported housing or care accommodation?',
+       trigger:'Supported housing triggers CQC regulation and Care Act 2014 compliance considerations.'}
+    ]
+  },
+  {
+    id:'building', num:'03',
+    title:'Building Characteristics',
+    hint:'Determines Building Safety Act 2022 obligations and HRB classification.',
+    questions:[
+      {id:'q3_1',type:'toggle',label:'Are any buildings expected to exceed 18 metres in height?',
+       trigger:'Buildings ≥18m are classified as Higher-Risk Buildings (HRBs) under the Building Safety Act 2022.'},
+      {id:'q3_2',type:'toggle',label:'Are any buildings expected to exceed 7 storeys?',
+       trigger:'Buildings >7 storeys are subject to BSA 2022 Gateway and Golden Thread requirements.'},
+      {id:'q3_3',type:'toggle',label:'Are the programme buildings primarily residential?'},
+      {id:'q3_4',type:'toggle',label:'Will the programme involve refurbishment of existing high-rise residential buildings?'},
+      {id:'q3_5',type:'toggle',label:'Will the programme include mixed-use buildings (residential + commercial)?'},
+      {id:'q3_6',type:'toggle',label:'Are buildings expected to remain occupied during major construction works?',
+       trigger:'Occupied buildings during works requires a Construction Phase Occupancy Risk Plan.'}
+    ]
+  },
+  {
+    id:'safety', num:'04',
+    title:'Building Safety Governance',
+    hint:'Determines HRB safety management, Gateway approvals and Golden Thread requirements.',
+    questions:[
+      {id:'q4_1',type:'toggle',label:'Will the programme require Building Safety Regulator approval?',
+       trigger:'BSR approval is mandatory for all new HRB projects and major refurbishments.'},
+      {id:'q4_2',type:'toggle',label:'Will the programme require Gateway approvals under the Building Safety Act?',
+       trigger:'Gateway 2 and 3 approvals must be obtained before construction and occupation respectively.'},
+      {id:'q4_3',type:'toggle',label:'Will a digital "Golden Thread" of building safety information be required?',
+       trigger:'Golden Thread is mandatory for all HRBs — structured, version-controlled safety documentation.'},
+      {id:'q4_4',type:'toggle',label:'Will an Accountable Person or Building Safety Manager need to be appointed?',
+       trigger:'Accountable Person appointment is a statutory duty under BSA 2022 for occupied HRBs.'}
+    ]
+  },
+  {
+    id:'construction', num:'05',
+    title:'Construction & Site Works',
+    hint:'Determines CDM 2015 duties, HSE notification and hazardous materials obligations.',
+    questions:[
+      {id:'q5_1',type:'toggle',label:'Will the programme involve construction works?'},
+      {id:'q5_2',type:'toggle',label:'Will multiple contractors operate across programme projects?',
+       trigger:'Multiple contractors require appointment of Principal Contractor under CDM 2015.'},
+      {id:'q5_3',type:'toggle',label:'Will the programme involve demolition of existing buildings?',
+       trigger:'Demolition triggers HSE F10 notification and pre-demolition structural survey requirements.'},
+      {id:'q5_4',type:'toggle',label:'Will the programme involve structural alterations to existing buildings?'},
+      {id:'q5_5',type:'toggle',label:'Will the programme involve hazardous material remediation (e.g., asbestos)?',
+       trigger:'Asbestos works require a licensed contractor, management survey, and HSE notification.'},
+      {id:'q5_6',type:'toggle',label:'Will the programme require appointment of a Principal Designer and Principal Contractor?',
+       trigger:'CDM 2015 requires Principal Designer appointment where more than one contractor is involved.'}
+    ]
+  },
+  {
+    id:'procurement', num:'06',
+    title:'Procurement & Contracting',
+    hint:'Determines public procurement legislation obligations and framework compliance.',
+    questions:[
+      {id:'q6_1',type:'toggle',label:'Will construction contracts be procured by a public authority?',
+       trigger:'Public authority procurement is subject to the Procurement Act 2023 (effective February 2025).'},
+      {id:'q6_2',type:'toggle',label:'Will procurement follow public procurement legislation?',
+       trigger:'Contracts above threshold must follow competitive tendering rules.'},
+      {id:'q6_3',type:'toggle',label:'Will the programme use framework agreements or delivery partnerships?'},
+      {id:'q6_4',type:'toggle',label:'Will contracts be procured individually per project or as programme packages?'},
+      {id:'q6_5',type:'toggle',label:'Will the programme involve joint venture or development partners?',
+       trigger:'JV structures may require additional governance, SPV setup and legal due diligence.'}
+    ]
+  },
+  {
+    id:'planning', num:'07',
+    title:'Planning & Development',
+    hint:'Determines planning legislation and development control requirements.',
+    questions:[
+      {id:'q7_1',type:'toggle',label:'Will the programme require planning permission for new development?'},
+      {id:'q7_2',type:'toggle',label:'Will any sites fall within conservation areas or heritage zones?',
+       trigger:'Conservation areas require additional heritage impact assessments and consent conditions.'},
+      {id:'q7_3',type:'toggle',label:'Will the programme involve listed buildings?',
+       trigger:'Listed buildings require Listed Building Consent for any alterations affecting character.'},
+      {id:'q7_4',type:'toggle',label:'Will development involve change of land use?'}
+    ]
+  },
+  {
+    id:'environment', num:'08',
+    title:'Environmental & Sustainability Compliance',
+    hint:'Determines environmental regulation, flood risk and biodiversity net gain obligations.',
+    questions:[
+      {id:'q8_1',type:'toggle',label:'Are any programme sites located on brownfield or previously developed land?'},
+      {id:'q8_2',type:'toggle',label:'Are any sites located in flood risk zones?',
+       trigger:'Flood risk zones require a Flood Risk Assessment and Sequential Test before planning.'},
+      {id:'q8_3',type:'toggle',label:'Will development require environmental impact assessments?',
+       trigger:'EIA required for Schedule 1/2 development under the Town & Country Planning (EIA) Regulations 2017.'},
+      {id:'q8_4',type:'toggle',label:'Will the programme involve decarbonisation or energy efficiency upgrades?'},
+      {id:'q8_5',type:'toggle',label:'Will the programme require biodiversity net gain compliance?',
+       trigger:'Biodiversity Net Gain (10% minimum) is mandatory for planning permissions in England from February 2024.'}
+    ]
+  },
+  {
+    id:'residents', num:'09',
+    title:'Resident & Community Impact',
+    hint:'Determines consultation obligations, equality duties and party wall requirements.',
+    questions:[
+      {id:'q9_1',type:'toggle',label:'Will the programme require resident consultation processes?',
+       trigger:'Resident consultation required under RSH Consumer Standards and Housing Act 1985.'},
+      {id:'q9_2',type:'toggle',label:'Will works impact vulnerable residents or protected groups?',
+       trigger:'Works affecting protected groups trigger PSED obligations under Equality Act 2010.'},
+      {id:'q9_3',type:'toggle',label:'Will an Equality Impact Assessment (EqIA) be required?',
+       trigger:'EqIA required where decisions may disproportionately affect groups with protected characteristics.'},
+      {id:'q9_4',type:'toggle',label:'Will works affect shared or neighbouring structures (party walls)?',
+       trigger:'Party Wall Act 1996 notices must be served to adjoining owners at least 2 months before works.'}
+    ]
+  },
+  {
+    id:'information', num:'10',
+    title:'Information Governance & Transparency',
+    hint:'Determines FOI obligations and compliance documentation requirements.',
+    questions:[
+      {id:'q10_1',type:'toggle',label:'Is the programme delivered by a public authority subject to FOI legislation?',
+       trigger:'FOI obligations require publication schemes and response procedures for information requests.'},
+      {id:'q10_2',type:'toggle',label:'Will the programme require formal compliance documentation and regulatory reporting?',
+       trigger:'Formal compliance docs include Construction Phase Plans, Building Safety Cases and RSH returns.'}
+    ]
+  }
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+const S = {};
+PHASES.forEach(p => p.questions.forEach(q => { S[q.id] = q.type==='multi' ? [] : false; }));
+
+// ── BUILD UI ─────────────────────────────────────────────────────────────────
+function buildUI() {
+  const main = document.getElementById('mainContent');
+  const nav  = document.getElementById('phaseNav');
+
+  PHASES.forEach((phase, idx) => {
+    const dot = document.createElement('div');
+    dot.className = 'phase-nav-dot' + (idx===0?' active':'');
+    dot.id = `nav_${phase.id}`;
+    dot.title = phase.title;
+    dot.onclick = () => { openPhase(phase.id); document.getElementById(`card_${phase.id}`).scrollIntoView({behavior:'smooth',block:'start'}); };
+    nav.appendChild(dot);
+
+    const card = document.createElement('div');
+    card.className = 'phase-card' + (idx===0?' open active-phase':'');
+    card.id = `card_${phase.id}`;
+    card.innerHTML = `
+      <div class="phase-header" onclick="togglePhase('${phase.id}')">
+        <div class="phase-badge" id="badge_${phase.id}">PHASE ${phase.num}</div>
+        <div style="flex:1">
+          <div class="phase-title">${phase.title}</div>
+          <div class="phase-subtitle">${phase.hint}</div>
+        </div>
+        <div class="phase-chevron">▾</div>
+      </div>
+      <div class="phase-body">
+        <div class="phase-hint">${phase.hint}</div>
+        <div class="question-group" id="qg_${phase.id}"></div>
+      </div>`;
+    main.appendChild(card);
+
+    const grp = card.querySelector(`#qg_${phase.id}`);
+    phase.questions.forEach(q => {
+      if (q.type === 'toggle') {
+        const row = document.createElement('div');
+        row.className = 'question-row';
+        row.innerHTML = `
+          <div class="q-label" id="ql_${q.id}">${q.label}</div>
+          <div class="toggle-wrap">
+            <span class="toggle-label" id="tl_${q.id}">NO</span>
+            <label class="toggle">
+              <input type="checkbox" id="${q.id}" onchange="onToggle('${q.id}')">
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>`;
+        if (q.trigger) {
+          const n = document.createElement('div');
+          n.className = 'trigger-note'; n.id = `tn_${q.id}`; n.textContent = q.trigger;
+          row.appendChild(n);
+        }
+        grp.appendChild(row);
+      }
+      if (q.type === 'multi') {
+        const w = document.createElement('div');
+        w.innerHTML = `<div class="chip-label">${q.label}</div>`;
+        const cg = document.createElement('div'); cg.className = 'chip-group';
+        q.options.forEach(opt => {
+          const c = document.createElement('div'); c.className = 'chip'; c.textContent = opt;
+          c.onclick = () => onChip(q.id, opt, c);
+          cg.appendChild(c);
+        });
+        w.appendChild(cg); grp.appendChild(w);
+      }
+    });
+  });
+}
+
+function togglePhase(id) {
+  const card = document.getElementById(`card_${id}`);
+  const open = card.classList.contains('open');
+  document.querySelectorAll('.phase-card').forEach(c => c.classList.remove('open','active-phase'));
+  if (!open) card.classList.add('open','active-phase');
+}
+function openPhase(id) {
+  document.querySelectorAll('.phase-card').forEach(c => c.classList.remove('open','active-phase'));
+  document.getElementById(`card_${id}`).classList.add('open','active-phase');
+}
+
+function onToggle(id) {
+  const cb = document.getElementById(id);
+  S[id] = cb.checked;
+  document.getElementById(`tl_${id}`).textContent = cb.checked ? 'YES' : 'NO';
+  const tn = document.getElementById(`tn_${id}`);
+  if (tn) tn.classList.toggle('show', cb.checked);
+  document.getElementById(`ql_${id}`).classList.toggle('triggered', cb.checked);
+  refresh();
+}
+function onChip(id, opt, el) {
+  const a = S[id], i = a.indexOf(opt);
+  if (i===-1) { a.push(opt); el.classList.add('selected'); }
+  else         { a.splice(i,1); el.classList.remove('selected'); }
+  refresh();
+}
+
+function refresh() {
+  let done=0, flags=0;
+  PHASES.forEach(p => {
+    let hit=false;
+    p.questions.forEach(q => {
+      if (q.type==='toggle' && S[q.id]) { hit=true; flags++; }
+      if (q.type==='multi' && S[q.id].length>0) hit=true;
+    });
+    if (hit) {
+      done++;
+      document.getElementById(`nav_${p.id}`).classList.add('completed');
+      document.getElementById(`badge_${p.id}`).classList.add('done');
+    } else {
+      document.getElementById(`nav_${p.id}`).classList.remove('completed');
+      document.getElementById(`badge_${p.id}`).classList.remove('done');
+    }
+  });
+  document.getElementById('completedCount').textContent = done;
+  document.getElementById('progressBar').style.width = (done/PHASES.length*100)+'%';
+  document.getElementById('completionText').innerHTML = done===0
+    ? '— Answer questions to build your profile'
+    : `<strong>${done}</strong> of 10 sections profiled &nbsp;·&nbsp; <strong>${flags}</strong> regulatory triggers flagged`;
+}
+
+// ── PROMPT BUILDER ───────────────────────────────────────────────────────────
+function buildProfileText() {
+  return PHASES.map(p => {
+    const qs = p.questions.map(q =>
+      q.type==='toggle'
+        ? `  - ${q.label}: ${S[q.id]?'YES':'NO'}`
+        : `  - ${q.label}: ${S[q.id].length>0?S[q.id].join(', '):'None selected'}`
+    ).join('\n');
+    return `### ${p.num}. ${p.title}\n${qs}`;
+  }).join('\n\n');
+}
+
+// ── SYSTEM PROMPT ────────────────────────────────────────────────────────────
+const SYS = `You are an AI Regulatory Compliance Advisor embedded in RiskTrack Pro, a compliance and risk management platform for UK social housing and built environment programmes.
+
+Your task is to analyse a completed Programme Compliance Profile and produce a precise, practical compliance determination for programme managers and housing governance teams.
+
+───────────────────────────────────────────────
+REGULATORY FRAMEWORKS IN SCOPE
+───────────────────────────────────────────────
+Apply only the frameworks triggered by the profile:
+
+HOUSING REGULATION
+• Social Housing Regulation Act 2023
+• RSH Consumer Standards: Safety & Quality, Transparency, Neighbourhood & Community, Tenancy
+• Governance & Financial Viability Standard
+• Homes England Affordable Homes Programme (AHP) grant conditions
+
+BUILDING SAFETY
+• Building Safety Act 2022 — HRB Gateway regime (Gateways 2 & 3), Golden Thread, Accountable Person duties
+• Fire Safety Act 2021
+• Building Regulations 2010
+
+CONSTRUCTION SAFETY
+• Construction (Design and Management) Regulations 2015 (CDM 2015)
+• Health & Safety at Work Act 1974
+• HSE oversight and F10 notification requirements
+
+LEASEHOLDER & HOUSING LAW
+• Landlord and Tenant Act 1985 — Section 20 qualifying works consultation
+• Housing Act 1985 / 1988 / 1996 — decant and rehousing duties
+• Care Act 2014 / CQC registration (supported housing only)
+
+PROCUREMENT & PUBLIC SPENDING
+• Procurement Act 2023 (effective February 2025)
+• Public Contracts Regulations 2015 (transitional)
+• Value for money and audit trail obligations (public funding)
+
+PLANNING & DEVELOPMENT
+• Town and Country Planning Act 1990
+• Planning (Listed Buildings and Conservation Areas) Act 1990
+• Community Infrastructure Levy / Infrastructure Levy
+
+ENVIRONMENTAL
+• Environmental Protection Act 1990
+• Environment Act 2021 — Biodiversity Net Gain (mandatory 10%, England, from February 2024)
+• Flood Risk Regulations 2009
+• Town & Country Planning (Environmental Impact Assessment) Regulations 2017
+
+EQUALITY & SOCIAL IMPACT
+• Equality Act 2010 — Public Sector Equality Duty (PSED)
+
+INFORMATION GOVERNANCE
+• Freedom of Information Act 2000
+• Data Protection Act 2018 / UK GDPR
+
+OTHER
+• Party Wall etc. Act 1996
+• Social Housing Decarbonisation Fund (SHDF) programme requirements
+
+───────────────────────────────────────────────
+ANALYSIS RULES
+───────────────────────────────────────────────
+1. Apply strict regulatory trigger logic. Only surface frameworks genuinely activated by the profile.
+2. Be specific: name the legislation, state the trigger, describe the practical obligation.
+3. Flag any incomplete or ambiguous answers as compliance uncertainties requiring clarification.
+4. Do not assume information not provided in the profile.
+5. Assign risk level to each compliance risk: HIGH / MEDIUM / LOW, based on regulatory consequence, delivery risk and complexity of compliance.
+6. Write for programme managers — practical obligations, not legal theory.
+
+───────────────────────────────────────────────
+OUTPUT FORMAT
+───────────────────────────────────────────────
+Return ONLY valid JSON. No markdown, no preamble, no trailing text.
+
+{
+  "summary": "2–3 sentence plain-English overview of the programme's compliance complexity and primary obligations.",
+  "applicable_regulations": [
+    { "name": "Legislation name", "trigger": "What in the profile activates this and why it applies" }
+  ],
+  "regulatory_authorities": [
+    { "name": "Authority name", "role": "Their specific jurisdiction or oversight function for this programme" }
+  ],
+  "mandatory_compliance_actions": [
+    { "action": "Specific compliance action title", "detail": "What this means in practice for programme delivery" }
+  ],
+  "required_approvals": [
+    { "approval": "Approval name", "detail": "When required, from whom, and what it gates" }
+  ],
+  "compliance_risk_profile": [
+    { "risk": "Risk title", "detail": "Why this is a risk and what could happen if unmanaged", "level": "HIGH | MEDIUM | LOW" }
+  ],
+  "uncertainties": [
+    { "item": "What is unclear or unanswered", "recommendation": "What clarification is needed before determination is finalised" }
+  ]
+}`;
+
+// ── AI ANALYSIS ──────────────────────────────────────────────────────────────
+let lastResult = null;
+
+async function runAIAnalysis() {
+  const btn = document.getElementById('analyseBtn');
+  btn.disabled = true;
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <div class="loading-label">
+        <strong>Analysing programme profile…</strong>
+        Determining applicable legislation, obligations and risk factors
+      </div>
+    </div>`;
+  document.getElementById('modalFooter').style.display = 'none';
+  document.getElementById('modalBackdrop').classList.add('open');
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYS,
+        messages: [{
+          role: 'user',
+          content: `Analyse the following completed programme compliance profile and produce the structured compliance determination.\n\nPROGRAMME COMPLIANCE PROFILE\n${'─'.repeat(60)}\n${buildProfileText()}`
+        }]
+      })
+    });
+
+    const data = await res.json();
+    const raw  = data.content?.find(b => b.type==='text')?.text || '';
+    const json = raw.replace(/```json|```/gi,'').trim();
+    const result = JSON.parse(json);
+    lastResult = result;
+    renderResult(result);
+
+  } catch(err) {
+    document.getElementById('modalBody').innerHTML = `
+      <div class="error-state">
+        <div class="ei">⚠</div>
+        <h3>Analysis Failed</h3>
+        <p>Unable to reach the compliance engine. Please check your connection and try again.</p>
+        <p style="margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--slate-dim)">${err.message}</p>
+      </div>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+function sec(icon, ic, title, count, items) {
+  return `<div class="result-section">
+    <div class="rs-header">
+      <div class="rs-icon ${ic}">${icon}</div>
+      <div class="rs-title">${title}</div>
+      <div class="rs-count">${count}</div>
+    </div>
+    <div class="result-items">${items}</div>
+  </div>`;
+}
+
+function renderResult(r) {
+  let h = '';
+
+  h += `<div class="summary-banner">
+    <div class="label">Programme Summary</div>
+    <p>${r.summary||''}</p>
+  </div>`;
+
+  if (r.applicable_regulations?.length)
+    h += sec('📋','ic-blue','Applicable Legislation',r.applicable_regulations.length,
+      r.applicable_regulations.map(x=>`<div class="ri"><div class="ri-dot d-blue"></div><div class="ri-text"><strong>${x.name}</strong><span>${x.trigger}</span></div></div>`).join(''));
+
+  if (r.regulatory_authorities?.length)
+    h += sec('🏛','ic-purple','Regulatory Authorities',r.regulatory_authorities.length,
+      r.regulatory_authorities.map(x=>`<div class="ri"><div class="ri-dot d-purple"></div><div class="ri-text"><strong>${x.name}</strong><span>${x.role}</span></div></div>`).join(''));
+
+  if (r.mandatory_compliance_actions?.length)
+    h += sec('✅','ic-green','Mandatory Compliance Actions',r.mandatory_compliance_actions.length,
+      r.mandatory_compliance_actions.map(x=>`<div class="ri"><div class="ri-dot d-green"></div><div class="ri-text"><strong>${x.action}</strong><span>${x.detail}</span></div></div>`).join(''));
+
+  if (r.required_approvals?.length)
+    h += sec('🔐','ic-amber','Required Approvals',r.required_approvals.length,
+      r.required_approvals.map(x=>`<div class="ri"><div class="ri-dot d-amber"></div><div class="ri-text"><strong>${x.approval}</strong><span>${x.detail}</span></div></div>`).join(''));
+
+  if (r.compliance_risk_profile?.length)
+    h += sec('⚠','ic-red','Compliance Risk Profile',r.compliance_risk_profile.length,
+      r.compliance_risk_profile.map(x=>{
+        const lv=(x.level||'MEDIUM').toUpperCase();
+        const bc=lv==='HIGH'?'rb-red':lv==='LOW'?'rb-green':'rb-amber';
+        const dc=lv==='HIGH'?'d-red':lv==='LOW'?'d-green':'d-amber';
+        return `<div class="ri"><div class="ri-dot ${dc}"></div><div class="ri-text"><strong>${x.risk}<span class="risk-badge ${bc}">${lv}</span></strong><span>${x.detail}</span></div></div>`;
+      }).join(''));
+
+  if (r.uncertainties?.length)
+    h += sec('❓','ic-amber','Compliance Uncertainties',r.uncertainties.length,
+      r.uncertainties.map(x=>`<div class="ri"><div class="ri-dot d-amber"></div><div class="ri-text"><strong>${x.item}</strong><span>${x.recommendation}</span></div></div>`).join(''));
+
+  document.getElementById('modalBody').innerHTML = h;
+  document.getElementById('modalFooter').style.display = 'flex';
+
+  const regs  = r.applicable_regulations?.length||0;
+  const acts  = r.mandatory_compliance_actions?.length||0;
+  const risks = r.compliance_risk_profile?.length||0;
+  document.getElementById('modalMeta').textContent =
+    `${regs} regulations · ${acts} mandatory actions · ${risks} risk factors`;
+}
+
+function copyReport() {
+  if (!lastResult) return;
+  const r = lastResult;
+  const lines = ['PROGRAMME COMPLIANCE DETERMINATION — RiskTrack Pro',''];
+  lines.push('SUMMARY', r.summary||'', '');
+  if (r.applicable_regulations?.length) {
+    lines.push('APPLICABLE LEGISLATION');
+    r.applicable_regulations.forEach(x => lines.push(`• ${x.name} — ${x.trigger}`));
+    lines.push('');
+  }
+  if (r.regulatory_authorities?.length) {
+    lines.push('REGULATORY AUTHORITIES');
+    r.regulatory_authorities.forEach(x => lines.push(`• ${x.name} — ${x.role}`));
+    lines.push('');
+  }
+  if (r.mandatory_compliance_actions?.length) {
+    lines.push('MANDATORY COMPLIANCE ACTIONS');
+    r.mandatory_compliance_actions.forEach(x => lines.push(`• ${x.action}: ${x.detail}`));
+    lines.push('');
+  }
+  if (r.required_approvals?.length) {
+    lines.push('REQUIRED APPROVALS');
+    r.required_approvals.forEach(x => lines.push(`• ${x.approval}: ${x.detail}`));
+    lines.push('');
+  }
+  if (r.compliance_risk_profile?.length) {
+    lines.push('COMPLIANCE RISK PROFILE');
+    r.compliance_risk_profile.forEach(x => lines.push(`[${x.level}] ${x.risk} — ${x.detail}`));
+    lines.push('');
+  }
+  if (r.uncertainties?.length) {
+    lines.push('UNCERTAINTIES / CLARIFICATIONS NEEDED');
+    r.uncertainties.forEach(x => lines.push(`• ${x.item}: ${x.recommendation}`));
+  }
+  navigator.clipboard.writeText(lines.join('\n')).catch(()=>{});
+}
+
+function closeModal() {
+  document.getElementById('modalBackdrop').classList.remove('open');
+}
+document.getElementById('modalBackdrop').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalBackdrop')) closeModal();
+});
+
+buildUI();
+refresh();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+.vercel
+.env*.local
+*.json
+cedar-risk-compliance-suite-firebase-adminsdk-*.json
